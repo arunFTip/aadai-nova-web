@@ -1,7 +1,11 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import { Toaster } from "vue-sonner";
+import GlobalLoader from "./components/ui/GlobalLoader.vue";
+import HelloWorld from "./components/HelloWorld.vue";
 </script>
 
 <template>
-      <router-view />
+  <router-view />
+  <Toaster rich-colors position="top-right" />
+  <GlobalLoader />
 </template>

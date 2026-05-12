@@ -7,7 +7,7 @@
 
       <nav class="p-4 space-y-2">
         <router-link
-          v-for="item in menu"
+          v-for="item in filteredMenu"
           :key="item.path"
           :to="item.path"
           class="block px-4 py-2 rounded hover:bg-gray-800"
@@ -31,5 +31,19 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import menu from "../../modules/admin/config/menu";
+import { useAuthStore } from "../../stores/auth";
+
+const auth = useAuthStore();
+
+const filteredMenu = computed(() => {
+  return menu.filter((item) => {
+    if (!item.permission) {
+      return true;
+    }
+
+    return auth.hasPermission(item.permission);
+  });
+});
 </script>

@@ -4,13 +4,19 @@
 
     <BaseCard>
       <form class="space-y-4" @submit.prevent="submit">
-        <BaseInput v-model="form.name" label="Name" placeholder="Enter name" />
+        <BaseInput
+          v-model="form.name"
+          label="Name"
+          placeholder="Enter name"
+          :error="errors.name?.[0]"
+        />
 
         <BaseInput
           v-model="form.email"
           label="Email"
           type="email"
           placeholder="Enter email"
+          :error="errors.email?.[0]"
         />
 
         <BaseInput
@@ -18,6 +24,7 @@
           label="Password"
           type="password"
           placeholder="Enter password"
+          :error="errors.password?.[0]"
         />
 
         <BaseInput
@@ -25,6 +32,7 @@
           label="Confirm Password"
           type="password"
           placeholder="Confirm password"
+          :error="errors.password_confirmation?.[0]"
         />
 
         <BaseButton :disabled="loading">
@@ -42,10 +50,12 @@ import BaseInput from "../../../components/ui/BaseInput.vue";
 import BaseButton from "../../../components/ui/BaseButton.vue";
 import { useRouter } from "vue-router";
 import { createUser } from "../api/userApi";
+import { toast } from "vue-sonner";
 
 const router = useRouter();
 const loading = ref(false);
 const error = ref("");
+const errors = ref({});
 
 const form = reactive({
   name: "",
@@ -59,10 +69,16 @@ async function submit() {
 
   try {
     await createUser(form);
+    toast.success("User created successfully");
     router.push("/admin/users");
   } catch (e) {
-    error.value = "Unable to create user";
     console.error(e);
+
+    if (e.response?.status === 422) {
+      errors.value = e.response.data.errors;
+    } else {
+      error.value = "Unable to create user";
+    }
   } finally {
     loading.value = false;
   }

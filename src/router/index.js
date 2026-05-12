@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
 const routes = [
   {
@@ -28,6 +29,9 @@ const routes = [
         name: "admin.users",
         component: () =>
           import("../modules/user-management/pages/UserListPage.vue"),
+        meta: {
+          permission: "user.view",
+        },
       },
       {
         path: "users/create",
@@ -35,7 +39,46 @@ const routes = [
         component: () =>
           import("../modules/user-management/pages/UserCreatePage.vue"),
       },
+      {
+        path: "users/:id/edit",
+        name: "admin.users.edit",
+        component: () =>
+          import("../modules/user-management/pages/UserEditPage.vue"),
+      },
+      {
+        path: "activity-logs",
+        name: "admin.activity-logs",
+        component: () =>
+          import("../modules/activity-logs/pages/ActivityLogListPage.vue"),
+        meta: {
+          permission: "activity-log.view",
+        },
+      },
+      {
+        path: "roles",
+        name: "admin.roles",
+        component: () =>
+          import("../modules/role-management/pages/RoleListPage.vue"),
+        meta: {
+          permission: "admin.view",
+        },
+      },
+      {
+        path: "roles/create",
+        name: "admin.roles.create",
+        component: () =>
+          import("../modules/role-management/pages/RoleCreatePage.vue"),
+        meta: {
+          permission: "admin.create",
+        },
+      },
     ],
+  },
+
+  {
+    path: "/403",
+    name: "forbidden",
+    component: () => import("../modules/errors/pages/ForbiddenPage.vue"),
   },
 
   {
@@ -49,15 +92,34 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const token = localStorage.getItem("token");
 
   if (to.path.startsWith("/admin") && !token) {
     return "/login";
   }
 
+  const auth = useAuthStore();
+
+  if (token && !auth.user) {
+    try {
+      await auth.fetchUser();
+    } catch {
+      auth.logout();
+      return "/login";
+    }
+  }
+
+  if (to.meta.permission) {
+    const allowed = auth.hasPermission(to.meta.permission);
+
+    if (!allowed) {
+      return "/403";
+    }
+  }
+
   if (to.path === "/login" && token) {
-    return "/admin";
+    return "/403";
   }
 });
 

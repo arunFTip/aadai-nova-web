@@ -6,7 +6,15 @@ export const useAuthStore = defineStore("auth", {
     user: null,
     token: localStorage.getItem("token") || null,
   }),
+  getters: {
+    permissions: (state) => state.user?.permissions || [],
 
+    hasPermission: (state) => {
+      return (permission) => {
+        return state.user?.permissions?.includes(permission);
+      };
+    },
+  },
   actions: {
     async login(payload) {
       const response = await client.post("/auth/login", payload);
