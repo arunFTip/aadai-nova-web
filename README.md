@@ -1,5 +1,93 @@
-# Vue 3 + Vite
+# README.md
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+````md
+# Aadai Nova Web
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+Aadai Nova Web is the frontend administration platform for Aadai Nova ERP.
+
+Built using Vue 3 and Vite, the platform provides:
+
+- Admin dashboard
+- User management
+- ACL-aware UI
+- Role management
+- Activity logs
+- Reusable enterprise UI system
+
+---
+
+# Tech Stack
+
+- Vue 3
+- Vite
+- Pinia
+- Vue Router
+- Tailwind CSS
+- Axios
+- Vue Sonner
+
+---
+
+# Current Features
+
+- Authentication flow
+- Permission-aware routing
+- Permission-aware menus
+- Permission-aware buttons
+- CRUD pages
+- Pagination
+- Search
+- Sorting
+- Global loading overlay
+- Toast notifications
+- Activity logs UI
+- Role management foundation
+
+---
+
+# Project Structure
+
+```text
+src/
+├── api/
+├── components/
+├── layouts/
+├── modules/
+├── router/
+├── stores/
+└── utils/
+```
+````
+
+---
+
+# Quick Setup
+
+```bash
+npm install
+npm run dev
+```
+
+---
+
+# Environment
+
+```env
+VITE_API_URL=http://127.0.0.1:8000/api
+```
+
+---
+
+# Documentation
+
+See:
+
+```text
+docs/
+```
+
+for full frontend documentation.
+
+```
+
+```
