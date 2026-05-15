@@ -6,15 +6,16 @@
           <div>
             <p class="font-semibold">{{ log.action }} {{ log.model }}</p>
 
-            <p class="text-sm text-gray-500">By {{ log.user }}</p>
+            <p class="text-sm text-[var(--color-muted)]">By {{ log.user }}</p>
           </div>
 
-          <p class="text-sm text-gray-500">
+          <p class="text-sm text-[var(--color-muted)]">
             {{ log.date }}
           </p>
         </div>
 
-        <pre class="bg-gray-100 p-4 rounded text-sm overflow-auto"
+        <pre
+          class="bg-[var(--color-code-bg)] border border-[var(--color-border)] p-4 rounded text-sm overflow-auto"
           >{{ JSON.stringify(log.changes, null, 2) }}
         </pre>
       </BaseCard>

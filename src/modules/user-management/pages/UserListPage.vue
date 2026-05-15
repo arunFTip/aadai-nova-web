@@ -15,7 +15,7 @@
       <select
         v-model="perPage"
         @change="loadUsers()"
-        class="mb-4 px-4 py-2 border border-gray-300 rounded"
+        class="mb-4 px-4 py-2 border border-[var(--color-border)] rounded bg-[var(--color-input)] text-[var(--color-text)]"
       >
         <option :value="10">10</option>
         <option :value="25">25</option>
@@ -27,9 +27,9 @@
         v-model="search"
         type="text"
         placeholder="Search users..."
-        class="w-full mb-4 px-4 py-2 border border-gray-300 rounded"
+        class="w-full mb-4 px-4 py-2 border border-[var(--color-border)] rounded bg-[var(--color-input)] text-[var(--color-text)] placeholder:text-[var(--color-muted)]"
       />
-      <p v-if="error" class="text-red-600 mb-4">
+      <p v-if="error" class="text-[var(--color-danger)] mb-4">
         {{ error }}
       </p>
       <p v-if="loading">Loading users...</p>
@@ -39,13 +39,13 @@
           <router-link
             v-if="auth.hasPermission('user.update')"
             :to="`/admin/users/${item.id}/edit`"
-            class="text-blue-600 hover:underline"
+            class="text-[var(--color-link)] hover:underline"
           >
             Edit
           </router-link>
           <button
             v-if="auth.hasPermission('user.delete')"
-            class="text-red-600 hover:underline"
+            class="text-[var(--color-danger)] hover:underline"
             @click="askDeleteUser(item.id)"
           >
             Delete

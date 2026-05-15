@@ -6,3 +6,10 @@ body {
     color: var(--color-text);
     background: var(--color-bg);
 }
+
+* {
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease;
+}

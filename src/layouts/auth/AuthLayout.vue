@@ -1,5 +1,5 @@
 <template>
-    <div class="auth-layout">
+    <div class="auth-layout bg-[var(--color-bg)] text-[var(--color-text)]">
         <router-view />
     </div>
 </template>

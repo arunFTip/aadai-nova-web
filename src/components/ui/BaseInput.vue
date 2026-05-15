@@ -8,11 +8,11 @@
       :type="type"
       :value="modelValue"
       :placeholder="placeholder"
-      class="w-full px-4 py-2 border border-gray-300 rounded"
+      class="w-full px-4 py-2 border border-[var(--color-border)] rounded bg-[var(--color-input)] text-[var(--color-text)] placeholder:text-[var(--color-muted)]"
       @input="$emit('update:modelValue', $event.target.value)"
     />
 
-    <p v-if="error" class="text-sm text-red-600 mt-1">
+    <p v-if="error" class="text-sm text-[var(--color-danger)] mt-1">
       {{ error }}
     </p>
   </div>

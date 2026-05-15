@@ -3,7 +3,7 @@
     v-if="pagination && pagination.last_page > 1"
     class="flex items-center justify-between mt-4"
   >
-    <p class="text-sm text-gray-600">
+    <p class="text-sm text-[var(--color-muted)]">
       Page {{ pagination.current_page }} of {{ pagination.last_page }}
     </p>
 

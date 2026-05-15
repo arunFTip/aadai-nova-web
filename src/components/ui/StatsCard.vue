@@ -1,6 +1,6 @@
 <template>
     <BaseCard>
-        <h3 class="text-sm text-gray-500">
+        <h3 class="text-sm text-[var(--color-muted)]">
             {{ title }}
         </h3>
 

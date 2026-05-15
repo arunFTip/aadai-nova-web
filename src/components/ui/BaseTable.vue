@@ -2,7 +2,7 @@
   <div class="overflow-x-auto">
     <table class="w-full text-left">
       <thead>
-        <tr class="border-b">
+        <tr class="border-b border-[var(--color-border)]">
           <th
             v-for="column in columns"
             :key="column.key"
@@ -17,7 +17,11 @@
       </thead>
 
       <tbody>
-        <tr v-for="item in items" :key="item.id" class="border-b">
+        <tr
+          v-for="item in items"
+          :key="item.id"
+          class="border-b border-[var(--color-border)]"
+        >
           <td v-for="column in columns" :key="column.key" class="py-2">
             {{ item[column.key] }}
           </td>
@@ -30,7 +34,7 @@
         <tr v-if="items.length === 0">
           <td
             :colspan="$slots.actions ? columns.length + 1 : columns.length"
-            class="py-6 text-center text-gray-500"
+            class="py-6 text-center text-[var(--color-muted)]"
           >
             No records found
           </td>

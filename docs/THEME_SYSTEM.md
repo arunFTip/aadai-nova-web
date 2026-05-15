@@ -12,10 +12,16 @@ Tailwind CSS
 
 ---
 
+# Current Features
+
+- light and dark mode
+- persisted theme switching
+- system theme fallback
+
+---
+
 # Planned Features
 
-- dark mode
-- theme switching
 - brand customization
 - tenant themes
 

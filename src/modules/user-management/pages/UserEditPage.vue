@@ -6,7 +6,7 @@
       <p v-if="loading">Loading user...</p>
 
       <form v-else class="space-y-4" @submit.prevent="submit">
-        <p v-if="error" class="text-red-600">
+        <p v-if="error" class="text-[var(--color-danger)]">
           {{ error }}
         </p>
 
