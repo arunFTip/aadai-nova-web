@@ -37,3 +37,11 @@ export async function fetchUsers(
 
   return response.data.data;
 }
+
+export async function updateUserRoles(id, roles) {
+  const response = await client.put(`/users/${id}/roles`, {
+    roles,
+  });
+
+  return response.data.data.user;
+}

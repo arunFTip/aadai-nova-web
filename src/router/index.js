@@ -72,6 +72,16 @@ const routes = [
           permission: "admin.create",
         },
       },
+
+      {
+        path: "roles/:id/edit",
+        name: "admin.roles.edit",
+        component: () =>
+          import("../modules/role-management/pages/RoleEditPage.vue"),
+        meta: {
+          permission: "admin.update",
+        },
+      },
     ],
   },
 

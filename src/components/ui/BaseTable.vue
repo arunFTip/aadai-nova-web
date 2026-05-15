@@ -20,7 +20,7 @@
         <tr
           v-for="item in items"
           :key="item.id"
-          class="border-b border-[var(--color-border)]"
+          class="border-b border-[var(--color-border)] odd:bg-[var(--color-table-row)] even:bg-[var(--color-table-row-alt)] hover:bg-[var(--color-table-row-hover)]"
         >
           <td v-for="column in columns" :key="column.key" class="py-2">
             {{ item[column.key] }}
