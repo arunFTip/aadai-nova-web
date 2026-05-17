@@ -18,6 +18,23 @@
           placeholder="Enter email"
           :error="errors.email?.[0]"
         />
+        <div>
+          <label class="block mb-2 font-semibold"> Status </label>
+
+          <div class="flex gap-4">
+            <label class="flex items-center gap-2">
+              <input v-model="form.status" type="radio" value="active" />
+
+              <span>Active</span>
+            </label>
+
+            <label class="flex items-center gap-2">
+              <input v-model="form.status" type="radio" value="inactive" />
+
+              <span>Inactive</span>
+            </label>
+          </div>
+        </div>
 
         <BaseInput
           v-model="form.password"
@@ -60,6 +77,7 @@ const errors = ref({});
 const form = reactive({
   name: "",
   email: "",
+  status: "active",
   password: "",
   password_confirmation: "",
 });

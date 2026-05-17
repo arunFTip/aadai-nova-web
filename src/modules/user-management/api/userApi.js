@@ -24,6 +24,7 @@ export async function fetchUsers(
   perPage = 10,
   sortBy = "id",
   sortDirection = "desc",
+  status = "",
 ) {
   const response = await client.get("/users", {
     params: {
@@ -32,6 +33,7 @@ export async function fetchUsers(
       per_page: perPage,
       sort_by: sortBy,
       sort_direction: sortDirection,
+      status,
     },
   });
 

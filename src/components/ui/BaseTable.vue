@@ -23,20 +23,13 @@
           class="border-b border-[var(--color-border)] odd:bg-[var(--color-table-row)] even:bg-[var(--color-table-row-alt)] hover:bg-[var(--color-table-row-hover)]"
         >
           <td v-for="column in columns" :key="column.key" class="py-2">
-            {{ item[column.key] }}
+            <slot :name="column.key" :item="item">
+              {{ item[column.key] }}
+            </slot>
           </td>
 
           <td v-if="$slots.actions" class="py-2">
             <slot name="actions" :item="item" />
-          </td>
-        </tr>
-
-        <tr v-if="items.length === 0">
-          <td
-            :colspan="$slots.actions ? columns.length + 1 : columns.length"
-            class="py-6 text-center text-[var(--color-muted)]"
-          >
-            No records found
           </td>
         </tr>
       </tbody>

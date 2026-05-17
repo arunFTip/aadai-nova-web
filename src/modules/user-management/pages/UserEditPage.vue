@@ -15,19 +15,33 @@
         <BaseInput v-model="form.email" label="Email" type="email" />
 
         <div>
-          <h3 class="font-semibold mb-2">Roles</h3>
+          <label class="block mb-2 font-semibold"> Status </label>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <label
-              v-for="role in roles"
-              :key="role.id"
-              class="flex items-center gap-2"
-            >
-              <input v-model="form.roles" type="checkbox" :value="role.name" />
+          <div class="flex gap-4">
+            <label class="flex items-center gap-2">
+              <input v-model="form.status" type="radio" value="active" />
 
-              <span>{{ role.name }}</span>
+              <span>Active</span>
+            </label>
+
+            <label class="flex items-center gap-2">
+              <input v-model="form.status" type="radio" value="inactive" />
+
+              <span>Inactive</span>
             </label>
           </div>
+        </div>
+
+        <div>
+          <label class="block mb-2 font-semibold"> Role </label>
+
+          <select v-model="form.roles" class="w-full border rounded px-3 py-2">
+            <option value="">Select Role</option>
+
+            <option v-for="role in roles" :key="role.id" :value="role.name">
+              {{ role.name }}
+            </option>
+          </select>
         </div>
 
         <BaseButton :disabled="saving">
@@ -57,7 +71,8 @@ const loading = ref(false);
 const form = reactive({
   name: "",
   email: "",
-  roles: [],
+  roles: "",
+  status: "active",
 });
 
 const router = useRouter();
@@ -75,7 +90,8 @@ onMounted(async () => {
 
     form.name = user.name;
     form.email = user.email;
-    form.roles = user.roles;
+    form.status = user.status;
+    form.roles = user.roles[0] ?? "";
     roles.value = allRoles;
   } catch (e) {
     console.error(e);
@@ -90,7 +106,7 @@ async function submit() {
 
   try {
     await updateUser(route.params.id, form);
-    await updateUserRoles(route.params.id, form.roles);
+    await updateUserRoles(route.params.id, [form.roles]);
     toast.success("User updated successfully");
     router.push("/admin/users");
   } catch (e) {

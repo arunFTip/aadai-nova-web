@@ -22,7 +22,15 @@
         <option :value="50">50</option>
         <option :value="100">100</option>
       </select>
-
+      <select
+        v-model="status"
+        @change="loadUsers()"
+        class="mb-4 px-4 py-2 border border-[var(--color-border)] rounded bg-[var(--color-card)]"
+      >
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
       <input
         v-model="search"
         type="text"
@@ -35,6 +43,29 @@
       <p v-if="loading">Loading users...</p>
 
       <BaseTable v-else :columns="columns" :items="users" @sort="sort">
+        <template #roles="{ item }">
+          <div class="flex flex-wrap gap-2">
+            <span
+              v-for="role in item.roles"
+              :key="role"
+              class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs"
+            >
+              {{ role }}
+            </span>
+          </div>
+        </template>
+        <template #status="{ item }">
+          <span
+            :class="[
+              'px-2 py-1 rounded text-xs capitalize',
+              item.status === 'active'
+                ? 'bg-green-100 text-green-700'
+                : 'bg-red-100 text-red-700',
+            ]"
+          >
+            {{ item.status }}
+          </span>
+        </template>
         <template #actions="{ item }">
           <router-link
             v-if="auth.hasPermission('user.update')"
@@ -43,6 +74,7 @@
           >
             Edit
           </router-link>
+
           <button
             v-if="auth.hasPermission('user.delete')"
             class="text-[var(--color-danger)] hover:underline"
@@ -50,15 +82,15 @@
           >
             Delete
           </button>
-          <ConfirmDialog
-            :show="showDeleteDialog"
-            title="Delete User"
-            message="Are you sure you want to delete this user?"
-            @confirm="confirmDeleteUser"
-            @cancel="showDeleteDialog = false"
-          />
         </template>
       </BaseTable>
+      <ConfirmDialog
+        :show="showDeleteDialog"
+        title="Delete User"
+        message="Are you sure you want to delete this user?"
+        @confirm="confirmDeleteUser"
+        @cancel="showDeleteDialog = false"
+      />
       <BasePagination :pagination="pagination" @change="loadUsers" />
     </BaseCard>
   </div>
@@ -95,11 +127,14 @@ const showDeleteDialog = ref(false);
 const selectedUserId = ref(null);
 
 const auth = useAuthStore();
+const status = ref("");
 
 const columns = [
   { key: "id", label: "ID" },
   { key: "name", label: "Name" },
   { key: "email", label: "Email" },
+  { key: "roles", label: "Roles" },
+  { key: "status", label: "Status" },
 ];
 
 onMounted(() => {
@@ -117,6 +152,7 @@ async function loadUsers(page = 1) {
       perPage.value,
       sortBy.value,
       sortDirection.value,
+      status.value,
     );
 
     users.value = data.users;
@@ -171,3 +207,5 @@ function sort(column) {
   loadUsers();
 }
 </script>
+
+// TODO: Add date in columns and filters // TODO: Find better date component
