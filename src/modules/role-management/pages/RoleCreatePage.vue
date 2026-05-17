@@ -16,6 +16,17 @@
           <p v-if="has('name')" class="mt-1 text-sm text-[var(--color-danger)]">
             {{ first("name") }}
           </p>
+          <BaseTextarea
+            v-model="form.description"
+            label="Description"
+            placeholder="Enter role description"
+          />
+          <p
+            v-if="has('description')"
+            class="mt-1 text-sm text-[var(--color-danger)]"
+          >
+            {{ first("description") }}
+          </p>
 
           <div>
             <h3 class="font-semibold mb-2">Permissions</h3>
@@ -59,6 +70,7 @@ import { createRole, fetchPermissions } from "../api/roleApi";
 import { useFormErrors } from "../../../composables/useFormErrors";
 import BaseFormSection from "../../../components/ui/BaseFormSection.vue";
 import BaseFormActions from "../../../components/ui/BaseFormActions.vue";
+import BaseTextarea from "../../../components/ui/BaseTextarea.vue";
 
 const permissions = ref([]);
 const router = useRouter();
@@ -67,6 +79,7 @@ const loading = ref(false);
 const form = reactive({
   name: "",
   permissions: [],
+  description: "",
 });
 
 const { errors, setErrors, clearErrors, first, has } = useFormErrors();

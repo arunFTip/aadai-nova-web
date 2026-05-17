@@ -95,3 +95,68 @@ Application-wide loading overlay.
 - reusable modal system
 - reusable pagination
 - reusable tables
+
+# Nova UI System
+
+## Goals
+
+- Reusable enterprise UI
+- Theme-token driven styling
+- Dark theme support
+- Consistent spacing/layout
+- Scalable ERP architecture
+
+## Theme Tokens
+
+Global theme variables:
+
+- --color-primary
+- --color-bg
+- --color-card
+- --color-border
+- --color-text
+- --color-muted
+- --color-success-bg
+- --color-success-text
+- --color-danger-bg
+- --color-danger-text
+- --color-warning-bg
+- --color-warning-text
+- --color-info-bg
+- --color-info-text
+
+## Reusable Components
+
+### Layout
+
+- BasePageHeader
+- BaseSection
+- BaseCard
+
+### Forms
+
+- BaseInput
+- BaseTextarea
+- BaseSelect
+- BaseSearchInput
+- BaseFormSection
+- BaseFormActions
+
+### Data Display
+
+- BaseTable
+- BasePagination
+- BaseBadge
+- BaseStatCard
+- BaseActivityTimeline
+
+### States
+
+- BaseEmptyState
+- BaseSkeleton
+- BaseTableSkeleton
+
+## Composables
+
+- useToast
+- useFormErrors

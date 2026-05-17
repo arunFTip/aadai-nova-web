@@ -1,31 +1,40 @@
 <template>
   <div>
-    <BasePageHeader
-      title="Users"
-      subtitle="Manage application users, roles, and account status."
-    >
-      <template #actions>
-        <router-link
-          v-if="auth.hasPermission('user.create')"
-          to="/admin/users/create"
-        >
-          <BaseButton> Create User </BaseButton>
-        </router-link>
-      </template>
-    </BasePageHeader>
-    <BaseCard>
-      <AdvancedFilterBar
-        v-model="filters"
-        :fields="filterFields"
-        @change="loadUsers"
+    <div class="flex items-start justify-between">
+      <BasePageHeader
+        title="Users"
+        subtitle="Manage application users, roles, and account status."
       />
+
+      <PageActionsBar>
+        <BaseRefreshButton @click="loadUsers" />
+
+        <BaseColumnCustomizer
+          :columns="columns"
+          storage-key="table.users.columns"
+        />
+
+        <BaseCreateButton to="/admin/users/create" label="Create User" />
+      </PageActionsBar>
+    </div>
+    <BaseCard>
+      <AdvancedFilterBar v-model="filters" :fields="filterFields" />
 
       <p v-if="error" class="text-[var(--color-danger)] mb-4">
         {{ error }}
       </p>
+
       <BaseTableSkeleton v-if="loading" :columns="5" :rows="8" />
 
-      <BaseTable v-else :columns="columns" :items="users" @sort="sort">
+      <BaseTable
+        v-else
+        :columns="visibleColumns"
+        :items="users"
+        :sort-by="sortBy"
+        :sort-direction="sortDirection"
+        @sort="sort"
+        :pagination="pagination"
+      >
         <template #roles="{ item }">
           <div class="flex flex-wrap gap-2">
             <BaseBadge v-for="role in item.roles" :key="role" type="info">
@@ -56,18 +65,19 @@
           </button>
         </template>
       </BaseTable>
-      <ConfirmDialog
-        :show="showDeleteDialog"
-        title="Delete User"
-        message="Are you sure you want to delete this user?"
-        @confirm="confirmDeleteUser"
-        @cancel="showDeleteDialog = false"
-      />
+
       <BasePagination
         :meta="pagination"
         :per-page="perPage"
         @change="loadUsers"
         @update:perPage="updatePerPage"
+      />
+      <BaseConfirmModal
+        :show="showDeleteDialog"
+        title="Delete User"
+        message="Are you sure you want to delete this user?"
+        @confirm="confirmDeleteUser"
+        @cancel="showDeleteDialog = false"
       />
     </BaseCard>
   </div>
@@ -82,13 +92,20 @@ import BaseButton from "../../../components/ui/BaseButton.vue";
 import BasePagination from "../../../components/ui/BasePagination.vue";
 import { useDebounceFn } from "@vueuse/core";
 import { useToast } from "../../../composables/useToast";
-import ConfirmDialog from "../../../components/ui/ConfirmDialog.vue";
 import { useAuthStore } from "../../../stores/auth";
 import AdvancedFilterBar from "../../../components/filters/AdvancedFilterBar.vue";
 import { useRoute, useRouter } from "vue-router";
 import BasePageHeader from "../../../components/ui/BasePageHeader.vue";
 import BaseTableSkeleton from "../../../components/ui/BaseTableSkeleton.vue";
 import BaseBadge from "../../../components/ui/BaseBadge.vue";
+import BaseColumnCustomizer from "../../../components/ui/BaseColumnCustomizer.vue";
+import { computed } from "vue";
+import BaseTableToolbar from "../../../components/ui/BaseTableToolbar.vue";
+import { useDebouncedSearch } from "../../../composables/useDebouncedSearch";
+import BaseRefreshButton from "../../../components/ui/BaseRefreshButton.vue";
+import BaseCreateButton from "../../../components/ui/BaseCreateButton.vue";
+import PageActionsBar from "../../../components/ui/PageActionsBar.vue";
+import BaseConfirmModal from "../../../components/ui/BaseConfirmModal.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -96,6 +113,8 @@ const router = useRouter();
 const search = ref("");
 
 const loading = ref(false);
+
+const toast = useToast();
 
 const users = ref([]);
 
@@ -150,13 +169,16 @@ const filterFields = [
   },
 ];
 
-const columns = [
-  { key: "id", label: "ID" },
-  { key: "name", label: "Name" },
-  { key: "email", label: "Email" },
-  { key: "roles", label: "Roles" },
-  { key: "status", label: "Status" },
-];
+const columns = ref([
+  { key: "name", label: "Name", visible: true },
+  { key: "email", label: "Email", visible: true },
+  { key: "roles", label: "Roles", visible: true },
+  { key: "status", label: "Status", visible: true },
+]);
+
+const visibleColumns = computed(() => {
+  return columns.value.filter((column) => column.visible);
+});
 
 function updatePerPage(value) {
   perPage.value = value;
@@ -195,27 +217,29 @@ async function loadUsers(page = 1) {
   }
 }
 
-const debouncedSearch = useDebounceFn(() => {
+useDebouncedSearch(filters, () => {
   loadUsers();
-}, 500);
+});
 
 watch(search, () => {
   debouncedSearch();
 });
+
 function askDeleteUser(id) {
   selectedUserId.value = id;
   showDeleteDialog.value = true;
 }
-
 async function confirmDeleteUser() {
+  if (!selectedUserId.value) {
+    return;
+  }
+
   try {
     await deleteUser(selectedUserId.value);
 
-    users.value = users.value.filter(
-      (user) => user.id !== selectedUserId.value,
-    );
-
     toast.success("User deleted successfully");
+
+    loadUsers();
   } catch (e) {
     toast.error("Unable to delete user");
     console.error(e);
@@ -236,5 +260,3 @@ function sort(column) {
   loadUsers();
 }
 </script>
-
-// TODO: Add date in columns and filters // TODO: Find better date component

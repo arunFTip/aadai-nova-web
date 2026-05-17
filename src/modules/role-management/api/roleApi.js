@@ -1,9 +1,23 @@
 import client from "../../../api/client";
 
-export async function fetchRoles() {
-  const response = await client.get("/roles");
+export async function fetchRoles(
+  page = 1,
+  search = "",
+  perPage = 10,
+  sortBy = "id",
+  sortDirection = "desc",
+) {
+  const response = await client.get("/roles", {
+    params: {
+      page,
+      search,
+      per_page: perPage,
+      sort_by: sortBy,
+      sort_direction: sortDirection,
+    },
+  });
 
-  return response.data.data.roles;
+  return response.data.data;
 }
 
 export async function fetchPermissions() {
