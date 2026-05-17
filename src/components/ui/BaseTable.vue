@@ -22,12 +22,25 @@
           :key="item.id"
           class="border-b border-[var(--color-border)] odd:bg-[var(--color-table-row)] even:bg-[var(--color-table-row-alt)] hover:bg-[var(--color-table-row-hover)]"
         >
+        
+        <tr v-if="items.length === 0">
+    <td
+        :colspan="$slots.actions ? columns.length + 1 : columns.length"
+        class="py-6"
+    >
+        <BaseEmptyState
+            title="No records found"
+            description="There are no records to display right now."
+        />
+    </td>
+</tr>
           <td v-for="column in columns" :key="column.key" class="py-2">
             <slot :name="column.key" :item="item">
               {{ item[column.key] }}
             </slot>
           </td>
 
+          
           <td v-if="$slots.actions" class="py-2">
             <slot name="actions" :item="item" />
           </td>
@@ -38,6 +51,7 @@
 </template>
 
 <script setup>
+import BaseEmptyState from './BaseEmptyState.vue'
 defineProps({
   columns: Array,
   items: Array,

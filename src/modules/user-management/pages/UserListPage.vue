@@ -1,70 +1,42 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">Users</h1>
-
-      <router-link
-        v-if="auth.hasPermission('user.create')"
-        to="/admin/users/create"
-      >
-        <BaseButton> Create User </BaseButton>
-      </router-link>
-    </div>
-
+    <BasePageHeader
+      title="Users"
+      subtitle="Manage application users, roles, and account status."
+    >
+      <template #actions>
+        <router-link
+          v-if="auth.hasPermission('user.create')"
+          to="/admin/users/create"
+        >
+          <BaseButton> Create User </BaseButton>
+        </router-link>
+      </template>
+    </BasePageHeader>
     <BaseCard>
-      <select
-        v-model="perPage"
-        @change="loadUsers()"
-        class="mb-4 px-4 py-2 border border-[var(--color-border)] rounded bg-[var(--color-input)] text-[var(--color-text)]"
-      >
-        <option :value="10">10</option>
-        <option :value="25">25</option>
-        <option :value="50">50</option>
-        <option :value="100">100</option>
-      </select>
-      <select
-        v-model="status"
-        @change="loadUsers()"
-        class="mb-4 px-4 py-2 border border-[var(--color-border)] rounded bg-[var(--color-card)]"
-      >
-        <option value="">All Status</option>
-        <option value="active">Active</option>
-        <option value="inactive">Inactive</option>
-      </select>
-      <input
-        v-model="search"
-        type="text"
-        placeholder="Search users..."
-        class="w-full mb-4 px-4 py-2 border border-[var(--color-border)] rounded bg-[var(--color-input)] text-[var(--color-text)] placeholder:text-[var(--color-muted)]"
+      <AdvancedFilterBar
+        v-model="filters"
+        :fields="filterFields"
+        @change="loadUsers"
       />
+
       <p v-if="error" class="text-[var(--color-danger)] mb-4">
         {{ error }}
       </p>
-      <p v-if="loading">Loading users...</p>
+      <BaseTableSkeleton v-if="loading" :columns="5" :rows="8" />
 
       <BaseTable v-else :columns="columns" :items="users" @sort="sort">
         <template #roles="{ item }">
           <div class="flex flex-wrap gap-2">
-            <span
-              v-for="role in item.roles"
-              :key="role"
-              class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs"
-            >
+            <BaseBadge v-for="role in item.roles" :key="role" type="info">
               {{ role }}
-            </span>
+            </BaseBadge>
           </div>
         </template>
         <template #status="{ item }">
-          <span
-            :class="[
-              'px-2 py-1 rounded text-xs capitalize',
-              item.status === 'active'
-                ? 'bg-green-100 text-green-700'
-                : 'bg-red-100 text-red-700',
-            ]"
-          >
-            {{ item.status }}
-          </span>
+          <BaseBadge :type="item.status === 'active' ? 'success' : 'danger'">
+            {{ item.status.charAt(0).toUpperCase() + item.status.slice(1) }}
+          </BaseBadge>
         </template>
         <template #actions="{ item }">
           <router-link
@@ -91,7 +63,12 @@
         @confirm="confirmDeleteUser"
         @cancel="showDeleteDialog = false"
       />
-      <BasePagination :pagination="pagination" @change="loadUsers" />
+      <BasePagination
+        :meta="pagination"
+        :per-page="perPage"
+        @change="loadUsers"
+        @update:perPage="updatePerPage"
+      />
     </BaseCard>
   </div>
 </template>
@@ -104,9 +81,17 @@ import { fetchUsers, deleteUser } from "../api/userApi";
 import BaseButton from "../../../components/ui/BaseButton.vue";
 import BasePagination from "../../../components/ui/BasePagination.vue";
 import { useDebounceFn } from "@vueuse/core";
-import { toast } from "vue-sonner";
+import { useToast } from "../../../composables/useToast";
 import ConfirmDialog from "../../../components/ui/ConfirmDialog.vue";
 import { useAuthStore } from "../../../stores/auth";
+import AdvancedFilterBar from "../../../components/filters/AdvancedFilterBar.vue";
+import { useRoute, useRouter } from "vue-router";
+import BasePageHeader from "../../../components/ui/BasePageHeader.vue";
+import BaseTableSkeleton from "../../../components/ui/BaseTableSkeleton.vue";
+import BaseBadge from "../../../components/ui/BaseBadge.vue";
+
+const route = useRoute();
+const router = useRouter();
 
 const search = ref("");
 
@@ -129,6 +114,42 @@ const selectedUserId = ref(null);
 const auth = useAuthStore();
 const status = ref("");
 
+const filters = ref({
+  search: route.query.search || "",
+  status: route.query.status || "",
+});
+
+function syncFiltersToUrl() {
+  const query = {};
+
+  Object.entries(filters.value).forEach(([key, value]) => {
+    if (value !== "" && value !== null && value !== undefined) {
+      query[key] = value;
+    }
+  });
+
+  router.replace({
+    query,
+  });
+}
+
+const filterFields = [
+  {
+    key: "search",
+    type: "text",
+    placeholder: "Search users",
+  },
+  {
+    key: "status",
+    type: "select",
+    options: [
+      { label: "All Status", value: "" },
+      { label: "Active", value: "active" },
+      { label: "Inactive", value: "inactive" },
+    ],
+  },
+];
+
 const columns = [
   { key: "id", label: "ID" },
   { key: "name", label: "Name" },
@@ -136,6 +157,14 @@ const columns = [
   { key: "roles", label: "Roles" },
   { key: "status", label: "Status" },
 ];
+
+function updatePerPage(value) {
+  perPage.value = value;
+
+  loadUsers();
+}
+
+syncFiltersToUrl();
 
 onMounted(() => {
   loadUsers();
@@ -148,11 +177,11 @@ async function loadUsers(page = 1) {
   try {
     const data = await fetchUsers(
       page,
-      search.value,
+      filters.value.search,
       perPage.value,
       sortBy.value,
       sortDirection.value,
-      status.value,
+      filters.value.status,
     );
 
     users.value = data.users;

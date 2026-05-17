@@ -6,73 +6,57 @@
         Welcome, {{ auth.user?.name }}
       </p>
 
-      <div v-if="stats" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <StatsCard title="Total Users" :value="stats.total_users" />
-        <StatsCard title="Active Users" :value="stats.active_users" />
-        <StatsCard title="Inactive Users" :value="stats.inactive_users" />
-        <StatsCard title="Roles" :value="stats.total_roles" />
-      </div>
+      <BaseSection
+        title="Overview"
+        description="System summary and key statistics."
+      >
+        <div
+          v-if="stats"
+          class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4"
+        >
+          <BaseStatCard
+            title="Total Users"
+            :value="stats.total_users"
+            description="Total registered users"
+            icon="👤"
+          />
 
-      <BaseCard v-if="stats?.recent_activities?.length">
-        <h2 class="text-xl font-semibold mb-4">Recent Activities</h2>
+          <BaseStatCard
+            title="Active Users"
+            :value="stats.active_users"
+            description="Currently active users"
+            icon="✅"
+          />
 
-        <div class="space-y-4">
-          <div
-            v-for="activity in stats.recent_activities"
-            :key="activity.id"
-            class="border-b border-[var(--color-border)] pb-4"
-          >
-            <div class="flex items-center justify-between">
-              <div class="font-semibold capitalize">
-                {{ activity.action }} {{ activity.model }}
+          <BaseStatCard
+            title="Inactive Users"
+            :value="stats.inactive_users"
+            description="Inactive user accounts"
+            icon="🚫"
+          />
 
-                <span class="font-bold">
-                  {{ activity.record_label }}
-                </span>
-              </div>
-
-              <span
-                class="px-2 py-1 rounded text-xs"
-                :class="{
-                  'bg-green-100 text-green-700': activity.action === 'created',
-
-                  'bg-blue-100 text-blue-700': activity.action === 'updated',
-
-                  'bg-red-100 text-red-700': activity.action === 'deleted',
-                }"
-              >
-                {{ activity.action }}
-              </span>
-            </div>
-
-            <div class="text-sm text-[var(--color-muted)] mt-1">
-              By: {{ activity.performed_by }}
-            </div>
-
-            <div v-if="activity.action === 'updated'" class="mt-2 text-sm">
-              <div v-for="(value, key) in activity.new" :key="key">
-                <strong>{{ key }}</strong
-                >:
-                {{ activity.old[key] ?? "-" }}
-                →
-                {{ value }}
-              </div>
-            </div>
-
-            <div v-if="activity.action === 'created'" class="mt-2 text-sm">
-              Created new record
-            </div>
-
-            <div v-if="activity.action === 'deleted'" class="mt-2 text-sm">
-              Deleted record
-            </div>
-
-            <div class="text-xs text-[var(--color-muted)] mt-2">
-              {{ activity.created_at }}
-            </div>
-          </div>
+          <BaseStatCard
+            title="Roles"
+            :value="stats.total_roles"
+            description="Available system roles"
+            icon="🛡️"
+          />
         </div>
-      </BaseCard>
+      </BaseSection>
+
+      <BaseSection
+        title="Recent Activities"
+        description="Latest user and system actions."
+      >
+        <BaseCard v-if="stats?.recent_activities?.length">
+          <div class="space-y-4">
+            <BaseActivityTimeline
+              v-if="stats?.recent_activities?.length"
+              :items="stats.recent_activities"
+            />
+          </div>
+        </BaseCard>
+      </BaseSection>
 
       <BaseButton @click="logout"> Logout </BaseButton>
     </BaseCard>
@@ -87,6 +71,9 @@ import BaseButton from "../../../components/ui/BaseButton.vue";
 import BaseCard from "../../../components/ui/BaseCard.vue";
 import StatsCard from "../../../components/ui/StatsCard.vue";
 import { fetchDashboardStats } from "../../dashboard/api/dashboardApi";
+import BaseStatCard from "../../../components/ui/BaseStatCard.vue";
+import BaseSection from "../../../components/ui/BaseSection.vue";
+import BaseActivityTimeline from "../../../components/ui/BaseActivityTimeline.vue";
 
 const router = useRouter();
 const auth = useAuthStore();

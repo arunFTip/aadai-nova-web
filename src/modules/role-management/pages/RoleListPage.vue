@@ -1,18 +1,23 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">Roles</h1>
-
-      <router-link
-        v-if="auth.hasPermission('admin.create')"
-        to="/admin/roles/create"
-      >
-        <BaseButton> Create Role </BaseButton>
-      </router-link>
-    </div>
+    <BasePageHeader
+      title="Roles"
+      subtitle="Manage user roles and permission assignments."
+    >
+      <template #actions>
+        <router-link
+          v-if="auth.hasPermission('admin.create')"
+          to="/admin/roles/create"
+        >
+          <BaseButton> Create Role </BaseButton>
+        </router-link>
+      </template>
+    </BasePageHeader>
 
     <BaseCard>
-      <BaseTable :columns="columns" :items="roles">
+      <BaseTableSkeleton v-if="loading" :columns="3" :rows="6" />
+
+      <BaseTable v-else :columns="columns" :items="roles">
         <template #actions="{ item }">
           <div class="space-y-2">
             <router-link
@@ -34,13 +39,13 @@
             </button>
 
             <div class="flex flex-wrap gap-2">
-              <span
+              <BaseBadge
                 v-for="permission in item.permissions"
                 :key="permission.id"
-                class="px-2 py-1 bg-gray-200 rounded text-xs"
+                type="info"
               >
                 {{ permission.name }}
-              </span>
+              </BaseBadge>
             </div>
           </div>
         </template>
@@ -64,12 +69,19 @@ import { fetchRoles, deleteRole } from "../api/roleApi";
 import BaseButton from "../../../components/ui/BaseButton.vue";
 import { useAuthStore } from "../../../stores/auth";
 import ConfirmDialog from "../../../components/ui/ConfirmDialog.vue";
-import { toast } from "vue-sonner";
+import { useToast } from "../../../composables/useToast";
+import BasePageHeader from "../../../components/ui/BasePageHeader.vue";
+import BaseTableSkeleton from "../../../components/ui/BaseTableSkeleton.vue";
+import BaseBadge from "../../../components/ui/BaseBadge.vue";
 
 const roles = ref([]);
 const auth = useAuthStore();
 const showDeleteDialog = ref(false);
 const selectedRoleId = ref(null);
+
+const loading = ref(false);
+
+const toast = useToast();
 
 const columns = [
   { key: "id", label: "ID" },
@@ -78,7 +90,13 @@ const columns = [
 ];
 
 onMounted(async () => {
-  roles.value = await fetchRoles();
+  loading.value = true;
+
+  try {
+    roles.value = await fetchRoles();
+  } finally {
+    loading.value = false;
+  }
 });
 
 function askDeleteRole(id) {

@@ -1,51 +1,36 @@
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-    <input
-      v-model="filters.model"
-      @input="loadLogs()"
-      type="text"
-      placeholder="Filter by model"
-      class="px-4 py-2 border border-[var(--color-border)] rounded bg-[var(--color-card)]"
+  <div>
+    <BasePageHeader
+      title="Activity Logs"
+      subtitle="Track system changes, user actions, and audit history."
     />
 
-    <select
-      v-model="filters.action"
-      @change="loadLogs()"
-      class="px-4 py-2 border border-[var(--color-border)] rounded bg-[var(--color-card)]"
-    >
-      <option value="">All Actions</option>
-      <option value="created">Created</option>
-      <option value="updated">Updated</option>
-      <option value="deleted">Deleted</option>
-    </select>
-
-    <input
-      v-model="filters.user"
-      @input="loadLogs()"
-      type="text"
-      placeholder="Filter by user"
-      class="px-4 py-2 border border-[var(--color-border)] rounded bg-[var(--color-card)]"
+    <AdvancedFilterBar
+      v-model="filters"
+      :fields="filterFields"
+      @change="loadLogs"
     />
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-      <DateRangeFilter @change="applyDateFilter" />
-    </div>
-    <div class="mb-4">
-      <button
-        @click="resetFilters"
-        class="px-4 py-2 rounded bg-[var(--color-danger)] text-white"
-      >
-        Reset Filters
-      </button>
-    </div>
-  </div>
-  <div class="space-y-4">
-    <div class="space-y-4">
+
+    <BaseTableSkeleton v-if="loading" :columns="5" :rows="8" />
+
+    <div v-else class="space-y-4">
       <BaseCard v-for="log in logs" :key="log.id">
-        <div class="flex justify-between mb-2">
+        <div class="flex justify-between gap-4">
           <div>
-            <p class="font-semibold">{{ log.action }} {{ log.model }}</p>
+            <div class="flex items-center gap-2">
+              <BaseBadge :type="actionVariant(log.action)">
+                {{ log.action }}
+              </BaseBadge>
 
-            <p class="text-sm text-[var(--color-muted)]">By {{ log.user }}</p>
+              <p class="font-semibold">
+                {{ log.model }}
+                <span v-if="log.record_label"> - {{ log.record_label }} </span>
+              </p>
+            </div>
+
+            <p class="mt-1 text-sm text-[var(--color-muted)]">
+              By {{ log.user }}
+            </p>
           </div>
 
           <p class="text-sm text-[var(--color-muted)]">
@@ -54,70 +39,129 @@
         </div>
 
         <pre
-          class="bg-[var(--color-code-bg)] border border-[var(--color-border)] p-4 rounded text-sm overflow-auto"
+          class="mt-4 rounded border border-[var(--color-border)] bg-[var(--color-code-bg)] p-4 text-sm overflow-auto"
           >{{ JSON.stringify(log.changes, null, 2) }}
-        </pre>
+                </pre
+        >
       </BaseCard>
+
+      <BasePagination
+        :meta="pagination"
+        :per-page="perPage"
+        @change="loadLogs"
+        @update:perPage="updatePerPage"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
+import BasePageHeader from "../../../components/ui/BasePageHeader.vue";
 import BaseCard from "../../../components/ui/BaseCard.vue";
-import BaseTable from "../../../components/ui/BaseTable.vue";
-import { fetchActivityLogs } from "../api/activityLogApi";
+import BaseBadge from "../../../components/ui/BaseBadge.vue";
 import BasePagination from "../../../components/ui/BasePagination.vue";
-import DateRangeFilter from "../../../components/filters/DateRangeFilter.vue";
+import BaseTableSkeleton from "../../../components/ui/BaseTableSkeleton.vue";
+import AdvancedFilterBar from "../../../components/filters/AdvancedFilterBar.vue";
+
+import { fetchActivityLogs } from "../api/activityLogApi";
+
+const route = useRoute();
+const router = useRouter();
 
 const logs = ref([]);
 const pagination = ref(null);
-
-const columns = [
-  { key: "action", label: "Action" },
-  { key: "model", label: "Model" },
-  { key: "record_id", label: "Record ID" },
-  { key: "user", label: "User" },
-  { key: "date", label: "Date" },
-];
+const loading = ref(false);
+const perPage = ref(10);
 
 const filters = ref({
-  model: "",
-  action: "",
-  user: "",
-  date_filter: "",
-  from: "",
-  to: "",
+  model: route.query.model || "",
+  action: route.query.action || "",
+  user: route.query.user || "",
+  date_filter: route.query.date_filter || "",
+  from: route.query.from || "",
+  to: route.query.to || "",
 });
-function resetFilters() {
-  filters.value = {
-    model: "",
-    action: "",
-    user: "",
-    date_filter: "",
-    from: "",
-    to: "",
-  };
 
-  loadLogs();
-}
-
-function applyDateFilter(payload) {
-  filters.value.date_filter = payload.date_filter;
-  filters.value.from = payload.from;
-  filters.value.to = payload.to;
-
-  loadLogs();
-}
+const filterFields = [
+  {
+    key: "model",
+    type: "text",
+    placeholder: "Filter by model",
+  },
+  {
+    key: "action",
+    type: "select",
+    options: [
+      { label: "All Actions", value: "" },
+      { label: "Created", value: "created" },
+      { label: "Updated", value: "updated" },
+      { label: "Deleted", value: "deleted" },
+    ],
+  },
+  {
+    key: "user",
+    type: "text",
+    placeholder: "Filter by user",
+  },
+  {
+    key: "date",
+    type: "date_range",
+  },
+];
 
 onMounted(() => {
   loadLogs();
 });
 
 async function loadLogs(page = 1) {
-  const data = await fetchActivityLogs(page, filters.value);
+  loading.value = true;
+  syncFiltersToUrl();
 
-  logs.value = data.logs;
-  pagination.value = data.pagination;
+  try {
+    const data = await fetchActivityLogs(page, filters.value, perPage.value);
+
+    logs.value = data.logs;
+    pagination.value = data.pagination;
+  } finally {
+    loading.value = false;
+  }
+}
+
+function updatePerPage(value) {
+  perPage.value = value;
+  loadLogs();
+}
+
+function syncFiltersToUrl() {
+  const query = {};
+
+  Object.entries(filters.value).forEach(([key, value]) => {
+    if (value !== "" && value !== null && value !== undefined) {
+      query[key] = value;
+    }
+  });
+
+  router.replace({ query });
+}
+
+function actionVariant(action) {
+  const value = String(action).toLowerCase().trim();
+
+  switch (value) {
+    case "created":
+      return "success";
+
+    case "updated":
+      return "warning";
+
+    case "deleted":
+      return "danger";
+
+    default:
+      return "default";
+  }
 }
 </script>
