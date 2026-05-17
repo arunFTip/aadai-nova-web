@@ -160,3 +160,32 @@ Global theme variables:
 
 - useToast
 - useFormErrors
+
+## Formatting Utilities
+
+Located in:
+
+src/utils/format.js
+
+Current helpers:
+
+- formatLabel
+- formatDate
+- formatTime
+- formatDateTime
+- formatCurrency
+- formatNumber
+- formatPercentage
+- formatFileSize
+- emptyValue
+
+Formatting is preference-aware where applicable.
+
+Supported preferences:
+
+- format.timezone
+- format.date_format
+- format.time_format
+- format.number_locale
+- format.currency
+- format.currency_locale

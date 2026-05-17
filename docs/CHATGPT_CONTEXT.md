@@ -167,3 +167,35 @@ Activity logs include:
 - record_label
 - old values
 - new values
+
+## Settings Module
+
+Location:
+
+src/modules/settings
+
+Purpose:
+
+Centralized UI for application configuration, localization, preferences, and future tenant policies.
+
+Current pages:
+
+- SettingsHomePage.vue
+- LocalizationSettingsPage.vue
+
+Current reusable settings component:
+
+- SettingsSectionCard
+
+Current preference-backed localization keys:
+
+- format.timezone
+- format.date_format
+- format.time_format
+- format.number_locale
+- format.currency
+- format.currency_locale
+
+Formatting helpers read these preferences through:
+
+src/stores/preferenceStore.js

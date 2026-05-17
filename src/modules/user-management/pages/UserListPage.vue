@@ -38,13 +38,13 @@
         <template #roles="{ item }">
           <div class="flex flex-wrap gap-2">
             <BaseBadge v-for="role in item.roles" :key="role" type="info">
-              {{ role }}
+              {{ formatLabel(role) }}
             </BaseBadge>
           </div>
         </template>
         <template #status="{ item }">
-          <BaseBadge :type="item.status === 'active' ? 'success' : 'danger'">
-            {{ item.status.charAt(0).toUpperCase() + item.status.slice(1) }}
+          <BaseBadge :type="badgeType(item.status)">
+            {{ formatLabel(item.status) }}
           </BaseBadge>
         </template>
         <template #actions="{ item }">
@@ -74,6 +74,7 @@
       />
       <BaseConfirmModal
         :show="showDeleteDialog"
+        :loading="deleting"
         title="Delete User"
         message="Are you sure you want to delete this user?"
         @confirm="confirmDeleteUser"
@@ -106,6 +107,8 @@ import BaseRefreshButton from "../../../components/ui/BaseRefreshButton.vue";
 import BaseCreateButton from "../../../components/ui/BaseCreateButton.vue";
 import PageActionsBar from "../../../components/ui/PageActionsBar.vue";
 import BaseConfirmModal from "../../../components/ui/BaseConfirmModal.vue";
+import { badgeType } from "../../../utils/badge";
+import { formatLabel, formatDateTime, emptyValue } from "../../../utils/format";
 
 const route = useRoute();
 const router = useRouter();
@@ -113,6 +116,8 @@ const router = useRouter();
 const search = ref("");
 
 const loading = ref(false);
+
+const deleting = ref(false);
 
 const toast = useToast();
 
@@ -230,6 +235,7 @@ function askDeleteUser(id) {
   showDeleteDialog.value = true;
 }
 async function confirmDeleteUser() {
+  deleting.value = true;
   if (!selectedUserId.value) {
     return;
   }
@@ -246,6 +252,7 @@ async function confirmDeleteUser() {
   } finally {
     showDeleteDialog.value = false;
     selectedUserId.value = null;
+    deleting.value = false;
   }
 }
 

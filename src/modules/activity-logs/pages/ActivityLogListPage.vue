@@ -18,8 +18,8 @@
         <div class="flex justify-between gap-4">
           <div>
             <div class="flex items-center gap-2">
-              <BaseBadge :type="actionVariant(log.action)">
-                {{ log.action }}
+              <BaseBadge :type="badgeType(log.action)">
+                {{ formatLabel(log.action) }}
               </BaseBadge>
 
               <p class="font-semibold">
@@ -30,11 +30,12 @@
 
             <p class="mt-1 text-sm text-[var(--color-muted)]">
               By {{ log.user }}
+              <BaseViewButton @click="viewLogDetails(log)" />
             </p>
           </div>
 
           <p class="text-sm text-[var(--color-muted)]">
-            {{ log.date }}
+            {{ formatDateTime(log.date) }}
           </p>
         </div>
 
@@ -51,6 +52,82 @@
         @change="loadLogs"
         @update:perPage="updatePerPage"
       />
+      <BaseInfoModal
+        :show="showDetailsModal"
+        title="Activity Log Details"
+        size="lg"
+        @close="showDetailsModal = false"
+      >
+        <div v-if="selectedLog" class="space-y-4">
+          <div>
+            <p class="font-semibold">Action</p>
+
+            <p>{{ selectedLog.action }}</p>
+          </div>
+
+          <div>
+            <p class="font-semibold">Model</p>
+
+            <p>{{ selectedLog.model }}</p>
+          </div>
+
+          <div>
+            <p class="font-semibold">Performed By</p>
+
+            <p>
+              {{ selectedLog.user || selectedLog.performed_by || "System" }}
+            </p>
+          </div>
+
+          <div>
+            <p class="font-semibold">Date</p>
+
+            <p>
+              {{ selectedLog.date || selectedLog.created_at }}
+            </p>
+          </div>
+
+          <div>
+            <p class="mb-2 font-semibold">Changes</p>
+
+            <div
+              class="overflow-x-auto rounded-lg border border-[var(--color-border)]"
+            >
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="border-b border-[var(--color-border)]">
+                    <th class="px-4 py-2 text-left">Field</th>
+
+                    <th class="px-4 py-2 text-left">Old Value</th>
+
+                    <th class="px-4 py-2 text-left">New Value</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr
+                    v-for="(change, key) in logChanges(selectedLog)"
+                    :key="key"
+                    class="border-b border-[var(--color-border)]"
+                  >
+                    <td class="px-4 py-2 font-medium">
+                      {{ key }}
+                    </td>
+
+                    <td class="px-4 py-2">
+                      {{ change.old ?? "-" }}
+                    </td>
+
+                    <td class="px-4 py-2">
+                      {{ change.new ?? "-" }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </BaseInfoModal>
     </div>
   </div>
 </template>
@@ -65,8 +142,11 @@ import BaseBadge from "../../../components/ui/BaseBadge.vue";
 import BasePagination from "../../../components/ui/BasePagination.vue";
 import BaseTableSkeleton from "../../../components/ui/BaseTableSkeleton.vue";
 import AdvancedFilterBar from "../../../components/filters/AdvancedFilterBar.vue";
-
 import { fetchActivityLogs } from "../api/activityLogApi";
+import BaseViewButton from "../../../components/ui/BaseViewButton.vue";
+import BaseInfoModal from "../../../components/ui/BaseInfoModal.vue";
+import { badgeType } from "../../../utils/badge";
+import { formatLabel, formatDateTime } from "../../../utils/format";
 
 const route = useRoute();
 const router = useRouter();
@@ -75,6 +155,8 @@ const logs = ref([]);
 const pagination = ref(null);
 const loading = ref(false);
 const perPage = ref(10);
+const selectedLog = ref(null);
+const showDetailsModal = ref(false);
 
 const filters = ref({
   model: route.query.model || "",
@@ -112,6 +194,11 @@ const filterFields = [
   },
 ];
 
+function viewLogDetails(log) {
+  selectedLog.value = log;
+  showDetailsModal.value = true;
+}
+
 onMounted(() => {
   loadLogs();
 });
@@ -147,21 +234,28 @@ function syncFiltersToUrl() {
   router.replace({ query });
 }
 
-function actionVariant(action) {
-  const value = String(action).toLowerCase().trim();
-
-  switch (value) {
-    case "created":
-      return "success";
-
-    case "updated":
-      return "warning";
-
-    case "deleted":
-      return "danger";
-
-    default:
-      return "default";
+function logChanges(log) {
+  if (!log) {
+    return {};
   }
+
+  const oldValues = log.old || log.changes?.old || {};
+  const newValues = log.new || log.changes?.attributes || {};
+
+  const allKeys = new Set([
+    ...Object.keys(oldValues),
+    ...Object.keys(newValues),
+  ]);
+
+  const result = {};
+
+  allKeys.forEach((key) => {
+    result[key] = {
+      old: oldValues[key] ?? "-",
+      new: newValues[key] ?? "-",
+    };
+  });
+
+  return result;
 }
 </script>

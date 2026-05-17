@@ -39,7 +39,7 @@
                 :key="permission.id"
                 type="info"
               >
-                {{ permission.name }}
+                {{ formatLabel(permission.name) }}
               </BaseBadge>
             </div>
           </div>
@@ -74,6 +74,7 @@
       />
       <BaseConfirmModal
         :show="showDeleteModal"
+        :loading="deleting"
         title="Delete Role"
         message="Are you sure you want to delete this role?"
         @cancel="showDeleteModal = false"
@@ -105,11 +106,14 @@ import BaseRefreshButton from "../../../components/ui/BaseRefreshButton.vue";
 import BaseCreateButton from "../../../components/ui/BaseCreateButton.vue";
 import PageActionsBar from "../../../components/ui/PageActionsBar.vue";
 import BaseConfirmModal from "../../../components/ui/BaseConfirmModal.vue";
+import { formatLabel, emptyValue } from "../../../utils/format";
 
 const roles = ref([]);
 const auth = useAuthStore();
 
 const loading = ref(false);
+
+const deleting = ref(false);
 
 const toast = useToast();
 
@@ -189,6 +193,7 @@ function askDeleteRole(id) {
 }
 
 async function confirmDeleteRole() {
+  deleting.value = true;
   if (!selectedRoleId.value) {
     return;
   }
@@ -204,6 +209,7 @@ async function confirmDeleteRole() {
   } finally {
     showDeleteModal.value = false;
     selectedRoleId.value = null;
+    deleting.value = false;
   }
 }
 </script>

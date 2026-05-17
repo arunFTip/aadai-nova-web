@@ -82,6 +82,69 @@ const routes = [
           permission: "admin.update",
         },
       },
+      {
+        path: "settings",
+        name: "admin.settings",
+        component: () =>
+          import("../modules/settings/pages/SettingsHomePage.vue"),
+        meta: {
+          permission: "admin.view",
+        },
+      },
+      {
+        path: "settings/localization",
+        name: "admin.settings.localization",
+        component: () =>
+          import("../modules/settings/pages/LocalizationSettingsPage.vue"),
+        meta: {
+          permission: "settings.localization.manage",
+        },
+      },
+      {
+        path: "settings/security",
+        name: "admin.settings.security",
+        component: () =>
+          import("../modules/settings/pages/SecuritySettingsPage.vue"),
+        meta: {
+          permission: "settings.security.manage",
+        },
+      },
+      {
+        path: "settings/preferences",
+        name: "admin.settings.preferences",
+        component: () =>
+          import("../modules/settings/pages/PreferencesSettingsPage.vue"),
+        meta: {
+          permission: "settings.preferences.manage",
+        },
+      },
+      {
+        path: "settings/branding",
+        name: "admin.settings.branding",
+        component: () =>
+          import("../modules/settings/pages/BrandingSettingsPage.vue"),
+        meta: {
+          permission: "settings.branding.manage",
+        },
+      },
+      {
+        path: "settings/notifications",
+        name: "admin.settings.notifications",
+        component: () =>
+          import("../modules/settings/pages/NotificationSettingsPage.vue"),
+        meta: {
+          permission: "settings.notifications.manage",
+        },
+      },
+      {
+        path: "settings/integrations",
+        name: "admin.settings.integrations",
+        component: () =>
+          import("../modules/settings/pages/IntegrationSettingsPage.vue"),
+        meta: {
+          permission: "settings.integrations.manage",
+        },
+      },
     ],
   },
 

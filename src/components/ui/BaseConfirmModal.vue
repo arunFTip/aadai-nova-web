@@ -1,20 +1,11 @@
 <template>
-  <div
-    v-if="show"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-  >
-    <div
-      class="w-full max-w-md rounded-xl bg-[var(--color-card)] p-6 shadow-xl"
-    >
-      <h2 class="text-lg font-semibold">
-        {{ title }}
-      </h2>
+  <BaseModal :show="show" :title="title" size="sm" @close="$emit('cancel')">
+    <p class="text-sm text-[var(--color-muted)]">
+      {{ message }}
+    </p>
 
-      <p class="mt-2 text-sm text-[var(--color-muted)]">
-        {{ message }}
-      </p>
-
-      <div class="mt-6 flex justify-end gap-3">
+    <template #footer>
+      <div class="flex justify-end gap-3">
         <button
           class="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm"
           @click="$emit('cancel')"
@@ -23,17 +14,20 @@
         </button>
 
         <button
-          class="rounded-lg bg-[var(--color-danger)] px-4 py-2 text-sm text-white"
+          class="rounded-lg bg-[var(--color-danger)] px-4 py-2 text-sm text-white disabled:opacity-50"
+          :disabled="loading"
           @click="$emit('confirm')"
         >
-          Confirm
+          {{ loading ? "Processing..." : "Confirm" }}
         </button>
       </div>
-    </div>
-  </div>
+    </template>
+  </BaseModal>
 </template>
 
 <script setup>
+import BaseModal from "./BaseModal.vue";
+
 defineProps({
   show: {
     type: Boolean,
@@ -48,6 +42,11 @@ defineProps({
   message: {
     type: String,
     default: "Are you sure?",
+  },
+
+  loading: {
+    type: Boolean,
+    default: false,
   },
 });
 

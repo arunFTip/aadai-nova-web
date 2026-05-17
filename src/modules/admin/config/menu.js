@@ -19,4 +19,10 @@ export default [
     path: "/admin/roles",
     permission: "admin.view",
   },
+  {
+    label: "Settings",
+    icon: "⚙️",
+    to: "/admin/settings",
+    permission: "settings.view",
+  },
 ];

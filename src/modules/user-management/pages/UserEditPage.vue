@@ -110,7 +110,7 @@ onMounted(async () => {
     form.email = user.email;
     form.status = user.status;
     form.roles = user.roles[0] ?? "";
-    roles.value = allRoles;
+    roles.value = allRoles.roles;
   } catch (e) {
     console.error(e);
   } finally {
