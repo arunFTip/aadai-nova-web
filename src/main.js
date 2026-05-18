@@ -9,8 +9,9 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import { loadPreferences } from "./stores/preferenceStore";
 
 const app = createApp(App);
-await loadPreferences();
 app.use(createPinia());
+await loadPreferences();
+
 app.use(router);
 
 app.mount("#app");

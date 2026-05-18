@@ -1,9 +1,5 @@
 <template>
-  <div>
-    <label v-if="label" class="mb-2 block font-semibold">
-      {{ label }}
-    </label>
-
+  <BaseFieldWrapper :label="label" :error="error" :hint="hint">
     <textarea
       :value="modelValue"
       :placeholder="placeholder"
@@ -11,14 +7,12 @@
       class="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-input)] px-4 py-3 text-sm outline-none focus:border-[var(--color-primary)]"
       @input="$emit('update:modelValue', $event.target.value)"
     />
-
-    <p v-if="hint" class="mt-1 text-xs text-[var(--color-muted)]">
-      {{ hint }}
-    </p>
-  </div>
+  </BaseFieldWrapper>
 </template>
 
 <script setup>
+import BaseFieldWrapper from "./BaseFieldWrapper.vue";
+
 defineProps({
   modelValue: {
     type: String,
@@ -39,7 +33,10 @@ defineProps({
     type: String,
     default: "",
   },
-
+  error: {
+    type: String,
+    default: "",
+  },
   rows: {
     type: Number,
     default: 4,

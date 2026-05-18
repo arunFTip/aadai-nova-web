@@ -12,21 +12,15 @@
             v-model="form.name"
             label="Role Name"
             placeholder="Enter role name"
+            :error="first('name')"
           />
-          <p v-if="has('name')" class="mt-1 text-sm text-[var(--color-danger)]">
-            {{ first("name") }}
-          </p>
+
           <BaseTextarea
             v-model="form.description"
             label="Description"
             placeholder="Enter role description"
+            :error="first('description')"
           />
-          <p
-            v-if="has('description')"
-            class="mt-1 text-sm text-[var(--color-danger)]"
-          >
-            {{ first("description") }}
-          </p>
 
           <div>
             <h3 class="font-semibold mb-2">Permissions</h3>

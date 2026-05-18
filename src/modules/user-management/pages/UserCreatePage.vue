@@ -12,22 +12,16 @@
             v-model="form.name"
             label="Name"
             placeholder="Enter name"
+            :error="first('name')"
           />
-          <p v-if="has('name')" class="mt-1 text-sm text-[var(--color-danger)]">
-            {{ first("name") }}
-          </p>
+
           <BaseInput
             v-model="form.email"
             label="Email"
             type="email"
             placeholder="Enter email"
+            :error="first('email')"
           />
-          <p
-            v-if="has('email')"
-            class="mt-1 text-sm text-[var(--color-danger)]"
-          >
-            {{ first("email") }}
-          </p>
 
           <div>
             <label class="block mb-2 font-semibold"> Status </label>
@@ -46,26 +40,28 @@
             label="Password"
             type="password"
             placeholder="Enter password"
+            :error="first('password')"
           />
-          <p
-            v-if="has('password')"
-            class="mt-1 text-sm text-[var(--color-danger)]"
-          >
-            {{ first("password") }}
-          </p>
 
           <BaseInput
             v-model="form.password_confirmation"
             label="Confirm Password"
             type="password"
             placeholder="Confirm password"
+            :error="first('password_confirmation')"
           />
-          <p
-            v-if="has('password_confirmation')"
-            class="mt-1 text-sm text-[var(--color-danger)]"
-          >
-            {{ first("password_confirmation") }}
-          </p>
+          <BaseSelect
+            v-model="form.roles"
+            label="Role"
+            :error="first('roles')"
+            :options="[
+              { label: 'Select Role', value: '' },
+              ...roles.map((role) => ({
+                label: role.name,
+                value: role.name,
+              })),
+            ]"
+          />
         </BaseFormSection>
 
         <BaseFormActions
@@ -80,7 +76,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import BaseCard from "../../../components/ui/BaseCard.vue";
 import BaseInput from "../../../components/ui/BaseInput.vue";
 import BaseButton from "../../../components/ui/BaseButton.vue";
@@ -91,12 +87,13 @@ import { useFormErrors } from "../../../composables/useFormErrors";
 import BaseFormSection from "../../../components/ui/BaseFormSection.vue";
 import BaseFormActions from "../../../components/ui/BaseFormActions.vue";
 import BaseSelect from "../../../components/ui/BaseSelect.vue";
+import { fetchRoles } from "../../role-management/api/roleApi";
 
 const router = useRouter();
 const loading = ref(false);
 const error = ref("");
 const errors = ref({});
-
+const roles = ref([]);
 const { setErrors, clearErrors, first, has } = useFormErrors();
 
 const toast = useToast();
@@ -107,14 +104,40 @@ const form = reactive({
   status: "active",
   password: "",
   password_confirmation: "",
+  roles: "",
 });
+
+onMounted(async () => {
+  const data = await fetchRoles();
+
+  roles.value = data.roles;
+});
+
 async function submit() {
   loading.value = true;
   clearErrors();
 
   try {
-    await createUser(form);
+    const payload = {
+      name: form.name,
+      email: form.email,
+      password: form.password,
+      password_confirmation: form.password_confirmation,
+      status: form.status,
+      role: form.roles || "user",
+    };
+
+    //await createUser(payload);
+
+    const response = await createUser(payload);
+    const user = response.user || response.data?.user;
+
+    if (form.roles) {
+      await updateUserRoles(user.id, [form.roles]);
+    }
+
     toast.success("User created successfully");
+
     router.push("/admin/users");
   } catch (e) {
     if (e.response?.status === 422) {
@@ -122,6 +145,7 @@ async function submit() {
     } else {
       toast.error("Unable to create user");
     }
+
     console.error(e);
   } finally {
     loading.value = false;

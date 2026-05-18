@@ -10,22 +10,15 @@
           title="Edit User Information"
           description="Edit the user's information and assign access roles."
         >
-          <p v-if="error" class="text-[var(--color-danger)]">
-            {{ error }}
-          </p>
+          <BaseInput v-model="form.name" label="Name" :error="first('name')" />
 
-          <BaseInput v-model="form.name" label="Name" />
-          <p v-if="has('name')" class="mt-1 text-sm text-[var(--color-danger)]">
-            {{ first("name") }}
-          </p>
+          <BaseInput
+            v-model="form.email"
+            label="Email"
+            type="email"
+            :error="first('email')"
+          />
 
-          <BaseInput v-model="form.email" label="Email" type="email" />
-          <p
-            v-if="has('email')"
-            class="mt-1 text-sm text-[var(--color-danger)]"
-          >
-            {{ first("email") }}
-          </p>
           <div>
             <label class="block mb-2 font-semibold"> Status </label>
 
@@ -43,6 +36,7 @@
 
             <BaseSelect
               v-model="form.roles"
+              :error="first('roles')"
               :options="[
                 { label: 'Select Role', value: '' },
                 ...roles.map((role) => ({
@@ -123,8 +117,15 @@ async function submit() {
   clearErrors();
 
   try {
+    if (!form.roles) {
+      setErrors({
+        roles: ["Role is required."],
+      });
+
+      return;
+    }
     await updateUser(route.params.id, form);
-    await updateUserRoles(route.params.id, form.roles ? [form.roles] : []);
+    await updateUserRoles(route.params.id, [form.roles]);
 
     toast.success("User updated successfully");
     router.push("/admin/users");
