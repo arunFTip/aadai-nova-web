@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <div class="flex items-start justify-between">
+  <BasePageContainer>
+    <BasePageToolbar>
       <BasePageHeader
         title="Roles"
         subtitle="Manage user roles and permission assignments."
       />
 
-      <PageActionsBar>
+      <BasePageActions>
         <BaseRefreshButton @click="loadRoles" />
 
         <BaseColumnCustomizer
@@ -15,9 +15,8 @@
         />
 
         <BaseCreateButton to="/admin/roles/create" label="Create Role" />
-      </PageActionsBar>
-    </div>
-
+      </BasePageActions>
+    </BasePageToolbar>
     <BaseCard>
       <AdvancedFilterBar v-model="filters" :fields="filterFields" />
       <BaseTableSkeleton v-if="loading" :columns="3" :rows="6" />
@@ -81,7 +80,7 @@
         @confirm="confirmDeleteRole"
       />
     </BaseCard>
-  </div>
+  </BasePageContainer>
 </template>
 
 <script setup>
@@ -98,15 +97,16 @@ import BaseTableSkeleton from "../../../components/ui/BaseTableSkeleton.vue";
 import BaseBadge from "../../../components/ui/BaseBadge.vue";
 import { computed } from "vue";
 import BaseColumnCustomizer from "../../../components/ui/BaseColumnCustomizer.vue";
-import BaseTableToolbar from "../../../components/ui/BaseTableToolbar.vue";
 import BasePagination from "../../../components/ui/BasePagination.vue";
 import { useDebouncedSearch } from "../../../composables/useDebouncedSearch";
 import AdvancedFilterBar from "../../../components/filters/AdvancedFilterBar.vue";
 import BaseRefreshButton from "../../../components/ui/BaseRefreshButton.vue";
 import BaseCreateButton from "../../../components/ui/BaseCreateButton.vue";
-import PageActionsBar from "../../../components/ui/PageActionsBar.vue";
+import BasePageActions from "../../../components/ui/BasePageActions.vue";
 import BaseConfirmModal from "../../../components/ui/BaseConfirmModal.vue";
 import { formatLabel, emptyValue } from "../../../utils/format";
+import BasePageContainer from "../../../components/ui/BasePageContainer.vue";
+import BasePageToolbar from "../../../components/ui/BasePageToolbar.vue";
 
 const roles = ref([]);
 const auth = useAuthStore();

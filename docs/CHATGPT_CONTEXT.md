@@ -199,3 +199,48 @@ Current preference-backed localization keys:
 Formatting helpers read these preferences through:
 
 src/stores/preferenceStore.js
+
+## Runtime Settings Flow
+
+Current runtime formatting/settings flow:
+
+Tenant Settings API
+↓
+Localization Settings Page
+↓
+preferenceStore.js (runtime cache)
+↓
+Formatting Helpers
+
+Current frontend runtime store still uses:
+
+- preferenceStore.js
+
+Future refactor planned:
+
+- settingsStore.js
+
+Goal:
+
+Single runtime settings resolver for:
+
+- tenant settings
+- tenant policies
+- user preferences
+- resolved runtime configuration
+
+## Tenant-Aware Frontend Planning
+
+Frontend architecture should remain tenant-aware.
+
+Future considerations:
+
+- tenant branding
+- tenant themes
+- tenant modules
+- tenant navigation
+- tenant localization
+- tenant dashboards
+- tenant feature toggles
+
+Avoid hardcoded assumptions that the application is single-organization only.

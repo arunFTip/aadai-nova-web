@@ -189,3 +189,49 @@ Supported preferences:
 - format.number_locale
 - format.currency
 - format.currency_locale
+
+### Page Layout
+
+- BasePageContainer
+- BasePageHeader
+- BasePageActions
+- BaseSection
+
+### Modals
+
+- BaseModal
+- BaseConfirmModal
+- BaseInfoModal
+
+### Table Actions
+
+- BaseRefreshButton
+- BaseCreateButton
+- BaseViewButton
+- BaseColumnCustomizer
+
+### Page Composition Pattern
+
+Standard page structure:
+
+```vue
+<BasePageContainer>
+    <BasePageToolbar>
+        <BasePageHeader
+            title="Page Title"
+            subtitle="Page description."
+        />
+
+        <BasePageActions>
+            <!-- page action buttons -->
+        </BasePageActions>
+    </BasePageToolbar>
+
+    <!-- filters -->
+
+    <!-- content/table/form -->
+</BasePageContainer>
+
+### Table Actions - BaseRefreshButton - BaseCreateButton - BaseViewButton -
+BaseColumnCustomizer
+```

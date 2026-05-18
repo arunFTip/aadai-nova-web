@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <BasePageContainer>
     <BasePageHeader
       title="Localization Settings"
       subtitle="Manage timezone, date, time, number, and currency formats."
@@ -132,7 +132,7 @@
         </BaseButton>
       </div>
     </div>
-  </div>
+  </BasePageContainer>
 </template>
 
 <script setup>
@@ -163,6 +163,8 @@ import {
   getPreference,
   loadPreferences,
 } from "../../../stores/preferenceStore";
+import BasePageContainer from "../../../components/ui/BasePageContainer.vue";
+import { fetchTenantSettings } from "../api/tenantSettingsApi";
 
 const form = reactive({
   timezone: "Asia/Kolkata",
@@ -205,7 +207,7 @@ async function submit() {
     setPreference("format.timezone", form.timezone);
     setPreference("format.currency", form.currency);
     setPreference("format.number_locale", form.number_locale);
-    setPreference("format.currency_locale", form.number_locale);
+    setPreference("format.currency_locale", form.currency_locale);
     setPreference("format.date_format", form.date_format);
     setPreference("format.time_format", form.time_format);
 
@@ -220,12 +222,12 @@ async function submit() {
 }
 
 onMounted(async () => {
-  await loadPreferences();
+  const settings = await fetchTenantSettings();
 
-  form.timezone = getPreference("format.timezone", "Asia/Kolkata");
-  form.currency = getPreference("format.currency", "INR");
-  form.number_locale = getPreference("format.number_locale", "en-IN");
-  form.date_format = getPreference("format.date_format", "DD/MM/YYYY");
-  form.time_format = getPreference("format.time_format", "12h");
+  form.timezone = settings["format.timezone"] || "Asia/Kolkata";
+  form.currency = settings["format.currency"] || "INR";
+  form.number_locale = settings["format.number_locale"] || "en-IN";
+  form.date_format = settings["format.date_format"] || "DD/MM/YYYY";
+  form.time_format = settings["format.time_format"] || "12h";
 });
 </script>

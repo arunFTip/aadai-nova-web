@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <BasePageContainer>
     <BasePageHeader
       title="Integration Settings"
       subtitle="Manage third-party integrations and external service connections."
@@ -9,10 +9,11 @@
       title="Coming Soon"
       description="Integration settings will be implemented here."
     />
-  </div>
+  </BasePageContainer>
 </template>
 
 <script setup>
 import BasePageHeader from "../../../components/ui/BasePageHeader.vue";
 import SettingsSectionCard from "../components/SettingsSectionCard.vue";
+import BasePageContainer from "../../../components/ui/BasePageContainer.vue";
 </script>

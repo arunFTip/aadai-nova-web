@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <BasePageContainer>
     <BasePageHeader
       title="Activity Logs"
       subtitle="Track system changes, user actions, and audit history."
@@ -129,7 +129,7 @@
         </div>
       </BaseInfoModal>
     </div>
-  </div>
+  </BasePageContainer>
 </template>
 
 <script setup>
@@ -147,6 +147,7 @@ import BaseViewButton from "../../../components/ui/BaseViewButton.vue";
 import BaseInfoModal from "../../../components/ui/BaseInfoModal.vue";
 import { badgeType } from "../../../utils/badge";
 import { formatLabel, formatDateTime } from "../../../utils/format";
+import BasePageContainer from "../../../components/ui/BasePageContainer.vue";
 
 const route = useRoute();
 const router = useRouter();

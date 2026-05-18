@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <div class="flex items-start justify-between">
+  <BasePageContainer>
+    <BasePageToolbar>
       <BasePageHeader
         title="Users"
         subtitle="Manage application users, roles, and account status."
       />
 
-      <PageActionsBar>
+      <BasePageActions>
         <BaseRefreshButton @click="loadUsers" />
 
         <BaseColumnCustomizer
@@ -15,8 +15,8 @@
         />
 
         <BaseCreateButton to="/admin/users/create" label="Create User" />
-      </PageActionsBar>
-    </div>
+      </BasePageActions>
+    </BasePageToolbar>
     <BaseCard>
       <AdvancedFilterBar v-model="filters" :fields="filterFields" />
 
@@ -81,7 +81,7 @@
         @cancel="showDeleteDialog = false"
       />
     </BaseCard>
-  </div>
+  </BasePageContainer>
 </template>
 
 <script setup>
@@ -101,14 +101,15 @@ import BaseTableSkeleton from "../../../components/ui/BaseTableSkeleton.vue";
 import BaseBadge from "../../../components/ui/BaseBadge.vue";
 import BaseColumnCustomizer from "../../../components/ui/BaseColumnCustomizer.vue";
 import { computed } from "vue";
-import BaseTableToolbar from "../../../components/ui/BaseTableToolbar.vue";
 import { useDebouncedSearch } from "../../../composables/useDebouncedSearch";
 import BaseRefreshButton from "../../../components/ui/BaseRefreshButton.vue";
 import BaseCreateButton from "../../../components/ui/BaseCreateButton.vue";
-import PageActionsBar from "../../../components/ui/PageActionsBar.vue";
+import BasePageActions from "../../../components/ui/BasePageActions.vue";
 import BaseConfirmModal from "../../../components/ui/BaseConfirmModal.vue";
 import { badgeType } from "../../../utils/badge";
 import { formatLabel, formatDateTime, emptyValue } from "../../../utils/format";
+import BasePageContainer from "../../../components/ui/BasePageContainer.vue";
+import BasePageToolbar from "../../../components/ui/BasePageToolbar.vue";
 
 const route = useRoute();
 const router = useRouter();

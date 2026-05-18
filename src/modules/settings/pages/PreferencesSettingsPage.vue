@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <BasePageContainer>
     <BasePageHeader
       title="User Preferences"
       subtitle="Manage personalization and UI preference defaults."
@@ -9,10 +9,11 @@
       title="Coming Soon"
       description="User preference management will be implemented here."
     />
-  </div>
+  </BasePageContainer>
 </template>
 
 <script setup>
 import BasePageHeader from "../../../components/ui/BasePageHeader.vue";
 import SettingsSectionCard from "../components/SettingsSectionCard.vue";
+import BasePageContainer from "../../../components/ui/BasePageContainer.vue";
 </script>
