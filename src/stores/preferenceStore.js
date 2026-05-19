@@ -32,3 +32,7 @@ export function setPreference(key, value) {
 export function usePreferenceStore() {
   return state;
 }
+
+export function getAllPreferences() {
+  return state.preferences;
+}

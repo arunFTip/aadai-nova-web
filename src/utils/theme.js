@@ -9,5 +9,6 @@ export function getThemeSettings() {
     skin: getPreference("theme.skin", "green"),
     sidebarColor: getPreference("theme.sidebar_color", "dark"),
     headerColor: getPreference("theme.header_color", "light"),
+    sidebarOrientation: getPreference("theme.sidebar_orientation", "vertical"),
   };
 }

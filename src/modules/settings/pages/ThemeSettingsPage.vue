@@ -37,6 +37,15 @@
             { label: 'Fixed', value: 'fixed' },
           ]"
         />
+
+        <BaseSelect
+          v-model="form.sidebar_orientation"
+          label="Sidebar Orientation"
+          :options="[
+            { label: 'Vertical', value: 'vertical' },
+            { label: 'Horizontal', value: 'horizontal' },
+          ]"
+        />
       </BaseFormGrid>
     </SettingsSectionCard>
 
@@ -105,6 +114,7 @@ const form = reactive({
   skin: "green",
   sidebar_color: "dark",
   header_color: "light",
+  sidebar_orientation: "vertical",
 });
 
 const skinOptions = [
@@ -135,6 +145,10 @@ onMounted(async () => {
   form.skin = getPreference("theme.skin", "green");
   form.sidebar_color = getPreference("theme.sidebar_color", "dark");
   form.header_color = getPreference("theme.header_color", "light");
+  form.sidebar_orientation = getPreference(
+    "theme.sidebar_orientation",
+    "vertical",
+  );
 });
 
 async function submit() {
@@ -150,6 +164,7 @@ async function submit() {
     setPreference("theme.skin", form.skin);
     setPreference("theme.sidebar_color", form.sidebar_color);
     setPreference("theme.header_color", form.header_color);
+    setPreference("theme.sidebar_orientation", form.sidebar_orientation);
 
     toast.success("Theme settings updated successfully");
   } catch (e) {

@@ -235,3 +235,97 @@ Standard page structure:
 ### Table Actions - BaseRefreshButton - BaseCreateButton - BaseViewButton -
 BaseColumnCustomizer
 ```
+
+## Sidebar Preferences
+
+Sidebar behavior is preference-aware.
+
+Current keys:
+
+- theme.sidebar_mode
+- theme.sidebar_sections
+
+Supported sidebar modes:
+
+- expanded
+- collapsed
+- icon
+
+Sidebar sections are grouped and collapsible.
+Active route sections auto-expand for better navigation context.
+
+# UI System
+
+## Layout System
+
+## Sidebar System
+
+## Theme System
+
+## Form System
+
+## Detail Pages
+
+## Tables
+
+## Empty States
+
+## Permission UI
+
+## Responsive Behavior
+
+## Runtime Preferences
+
+## Secondary Sidebar Planning
+
+Future layout architecture supports:
+
+- primary sidebar
+- contextual secondary sidebar
+
+Example:
+
+Primary:
+
+- Dashboard
+- Users
+- Roles
+- Settings
+
+Secondary (when Settings active):
+
+- Theme
+- Localization
+- Branding
+- Security
+- Email
+
+Benefits:
+
+- cleaner navigation
+- scalable ERP menus
+- avoids overly deep sidebars
+- better module organization
+- enterprise-style UX
+
+## Secondary Sidebar Planning
+
+Secondary sidebar should eventually support:
+
+- collapse/expand
+- responsive drawer mode
+- contextual module navigation
+- module-specific quick actions
+- search/filter
+- pinned items
+
+Examples:
+
+Settings
+HR
+CRM
+Inventory
+Finance
+Reports
+
+Secondary sidebar is intended for contextual navigation inside large modules.
