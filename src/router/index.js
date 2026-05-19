@@ -40,6 +40,15 @@ const routes = [
           import("../modules/user-management/pages/UserCreatePage.vue"),
       },
       {
+        path: "users/:id",
+        name: "admin.users.details",
+        component: () =>
+          import("../modules/user-management/pages/UserDetailsPage.vue"),
+        meta: {
+          permission: "user.view",
+        },
+      },
+      {
         path: "users/:id/edit",
         name: "admin.users.edit",
         component: () =>
@@ -70,6 +79,15 @@ const routes = [
           import("../modules/role-management/pages/RoleCreatePage.vue"),
         meta: {
           permission: "admin.create",
+        },
+      },
+      {
+        path: "roles/:id",
+        name: "admin.roles.details",
+        component: () =>
+          import("../modules/role-management/pages/RoleDetailsPage.vue"),
+        meta: {
+          permission: "admin.view",
         },
       },
 
@@ -143,6 +161,16 @@ const routes = [
           import("../modules/settings/pages/IntegrationSettingsPage.vue"),
         meta: {
           permission: "settings.integrations.manage",
+        },
+      },
+
+      {
+        path: "settings/theme",
+        name: "admin.settings.theme",
+        component: () =>
+          import("../modules/settings/pages/ThemeSettingsPage.vue"),
+        meta: {
+          permission: "settings.preferences.manage",
         },
       },
     ],

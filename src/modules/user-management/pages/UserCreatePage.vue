@@ -2,12 +2,12 @@
   <div>
     <h1 class="text-2xl font-bold mb-6">Create User</h1>
 
-    <BaseCard>
-      <form class="space-y-4" @submit.prevent="submit">
-        <BaseFormSection
-          title="User Information"
-          description="Create a new user account and assign access roles."
-        >
+    <BaseFormCard @submit="submit">
+      <BaseFormSection
+        title="User Information"
+        description="Create a new user account and assign access roles."
+      >
+        <BaseFormGrid>
           <BaseInput
             v-model="form.name"
             label="Name"
@@ -22,19 +22,9 @@
             placeholder="Enter email"
             :error="first('email')"
           />
+        </BaseFormGrid>
 
-          <div>
-            <label class="block mb-2 font-semibold"> Status </label>
-
-            <BaseSelect
-              v-model="form.status"
-              :options="[
-                { label: 'Active', value: 'active' },
-                { label: 'Inactive', value: 'inactive' },
-              ]"
-            />
-          </div>
-
+        <BaseFormGrid>
           <BaseInput
             v-model="form.password"
             label="Password"
@@ -50,28 +40,41 @@
             placeholder="Confirm password"
             :error="first('password_confirmation')"
           />
-          <BaseSelect
+        </BaseFormGrid>
+        <BaseFormGrid>
+          <div>
+            <label class="block mb-2 font-semibold"> Status </label>
+
+            <BaseSelect
+              v-model="form.status"
+              :options="[
+                { label: 'Active', value: 'active' },
+                { label: 'Inactive', value: 'inactive' },
+              ]"
+            />
+          </div>
+          <BaseSearchableSelect
             v-model="form.roles"
             label="Role"
+            placeholder="Search role"
             :error="first('roles')"
             :options="[
-              { label: 'Select Role', value: '' },
               ...roles.map((role) => ({
-                label: role.name,
+                label: formatLabel(role.name),
                 value: role.name,
               })),
             ]"
           />
-        </BaseFormSection>
+        </BaseFormGrid>
+      </BaseFormSection>
 
-        <BaseFormActions
-          :loading="loading"
-          submit-text="Create User"
-          loading-text="Creating..."
-          cancel-to="/admin/users"
-        />
-      </form>
-    </BaseCard>
+      <BaseFormActions
+        :loading="loading"
+        submit-text="Create User"
+        loading-text="Creating..."
+        cancel-to="/admin/users"
+      />
+    </BaseFormCard>
   </div>
 </template>
 
@@ -88,6 +91,10 @@ import BaseFormSection from "../../../components/ui/BaseFormSection.vue";
 import BaseFormActions from "../../../components/ui/BaseFormActions.vue";
 import BaseSelect from "../../../components/ui/BaseSelect.vue";
 import { fetchRoles } from "../../role-management/api/roleApi";
+import BaseFormGrid from "../../../components/ui/BaseFormGrid.vue";
+import BaseSearchableSelect from "../../../components/ui/BaseSearchableSelect.vue";
+import { formatLabel } from "../../../utils/format";
+import BaseFormCard from "../../../components/ui/BaseFormCard.vue";
 
 const router = useRouter();
 const loading = ref(false);
@@ -114,6 +121,10 @@ onMounted(async () => {
 });
 
 async function submit() {
+  async function submit() {
+    console.log("submit clicked");
+  }
+
   loading.value = true;
   clearErrors();
 

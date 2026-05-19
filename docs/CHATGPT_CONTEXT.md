@@ -244,3 +244,20 @@ Future considerations:
 - tenant feature toggles
 
 Avoid hardcoded assumptions that the application is single-organization only.
+
+## Pinia Bootstrap Rule
+
+Any runtime initialization depending on:
+
+- stores
+- interceptors
+- settings
+- authentication state
+
+must execute only AFTER:
+
+app.use(pinia)
+
+Incorrect order can cause:
+
+getActivePinia() was called but there was no active Pinia

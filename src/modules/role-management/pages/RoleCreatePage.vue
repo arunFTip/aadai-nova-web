@@ -2,17 +2,22 @@
   <div>
     <h1 class="text-2xl font-bold mb-6">Create Role</h1>
 
-    <BaseCard>
-      <form class="space-y-4" @submit.prevent="submit">
-        <BaseFormSection
-          title="Role Information"
-          description="Create a new role and assign permissions."
-        >
+    <BaseFormCard @submit="submit">
+      <BaseFormSection
+        title="Role Information"
+        description="Create a new role and assign
+        permissions."
+      >
+        <BaseFormGrid>
           <BaseInput
             v-model="form.name"
             label="Role Name"
+            required="true"
             placeholder="Enter role name"
+            hint="The name of the role (e.g., Admin, Editor)"
+            help="This is the name that will be displayed for the role. It should be unique and descriptive."
             :error="first('name')"
+            ,
           />
 
           <BaseTextarea
@@ -21,40 +26,25 @@
             placeholder="Enter role description"
             :error="first('description')"
           />
+        </BaseFormGrid>
 
-          <div>
-            <h3 class="font-semibold mb-2">Permissions</h3>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <label
-                v-for="permission in permissions"
-                :key="permission.id"
-                class="flex items-center gap-2"
-              >
-                <input
-                  v-model="form.permissions"
-                  type="checkbox"
-                  :value="permission.name"
-                />
-
-                <span>{{ permission.name }}</span>
-              </label>
-            </div>
-          </div>
-        </BaseFormSection>
-        <BaseFormActions
-          :loading="loading"
-          submit-text="Create Role"
-          loading-text="Creating..."
-          cancel-to="/admin/roles"
+        <BasePermissionGrid
+          v-model="form.permissions"
+          :groups="permissionGroups"
         />
-      </form>
-    </BaseCard>
+      </BaseFormSection>
+      <BaseFormActions
+        :loading="loading"
+        submit-text="Create Role"
+        loading-text="Creating..."
+        cancel-to="/admin/roles"
+      />
+    </BaseFormCard>
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, computed } from "vue";
 import BaseCard from "../../../components/ui/BaseCard.vue";
 import BaseInput from "../../../components/ui/BaseInput.vue";
 import BaseButton from "../../../components/ui/BaseButton.vue";
@@ -65,6 +55,10 @@ import { useFormErrors } from "../../../composables/useFormErrors";
 import BaseFormSection from "../../../components/ui/BaseFormSection.vue";
 import BaseFormActions from "../../../components/ui/BaseFormActions.vue";
 import BaseTextarea from "../../../components/ui/BaseTextarea.vue";
+import BaseFormGrid from "../../../components/ui/BaseFormGrid.vue";
+import BaseFormCard from "../../../components/ui/BaseFormCard.vue";
+import BasePermissionGrid from "../../../components/ui/BasePermissionGrid.vue";
+import { formatLabel } from "../../../utils/format";
 
 const permissions = ref([]);
 const router = useRouter();
@@ -82,6 +76,28 @@ const toast = useToast();
 
 onMounted(async () => {
   permissions.value = await fetchPermissions();
+});
+
+const permissionGroups = computed(() => {
+  const groups = {};
+
+  permissions.value.forEach((permission) => {
+    const permissionName =
+      typeof permission === "string" ? permission : permission.name;
+
+    const group = permissionName.split(".")[0];
+
+    if (!groups[group]) {
+      groups[group] = [];
+    }
+
+    groups[group].push(permissionName);
+  });
+
+  return Object.entries(groups).map(([name, permissions]) => ({
+    name: formatLabel(name),
+    permissions,
+  }));
 });
 
 async function submit() {

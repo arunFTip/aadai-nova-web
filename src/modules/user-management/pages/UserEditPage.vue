@@ -2,14 +2,14 @@
   <div>
     <h1 class="text-2xl font-bold mb-6">Edit User</h1>
 
-    <BaseCard>
-      <p v-if="loading">Loading user...</p>
+    <p v-if="loading">Loading user...</p>
 
-      <form v-else class="space-y-4" @submit.prevent="submit">
-        <BaseFormSection
-          title="Edit User Information"
-          description="Edit the user's information and assign access roles."
-        >
+    <BaseFormCard @submit="submit">
+      <BaseFormSection
+        title="Edit User Information"
+        description="Edit the user's information and assign access roles."
+      >
+        <BaseFormGrid>
           <BaseInput v-model="form.name" label="Name" :error="first('name')" />
 
           <BaseInput
@@ -18,7 +18,9 @@
             type="email"
             :error="first('email')"
           />
+        </BaseFormGrid>
 
+        <BaseFormGrid>
           <div>
             <label class="block mb-2 font-semibold"> Status </label>
 
@@ -46,15 +48,15 @@
               ]"
             />
           </div>
-        </BaseFormSection>
-        <BaseFormActions
-          :loading="saving"
-          submit-text="Update User"
-          loading-text="Updating..."
-          cancel-to="/admin/users"
-        />
-      </form>
-    </BaseCard>
+        </BaseFormGrid>
+      </BaseFormSection>
+      <BaseFormActions
+        :loading="saving"
+        submit-text="Update User"
+        loading-text="Updating..."
+        cancel-to="/admin/users"
+      />
+    </BaseFormCard>
   </div>
 </template>
 
@@ -71,6 +73,8 @@ import { useFormErrors } from "../../../composables/useFormErrors";
 import BaseFormSection from "../../../components/ui/BaseFormSection.vue";
 import BaseFormActions from "../../../components/ui/BaseFormActions.vue";
 import BaseSelect from "../../../components/ui/BaseSelect.vue";
+import BaseFormGrid from "../../../components/ui/BaseFormGrid.vue";
+import BaseFormCard from "../../../components/ui/BaseFormCard.vue";
 
 const roles = ref([]);
 

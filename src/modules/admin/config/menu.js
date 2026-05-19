@@ -1,22 +1,26 @@
 export default [
   {
     label: "Dashboard",
-    path: "/admin",
+    icon: "🏠",
+    to: "/admin",
     permission: "admin.view",
   },
   {
     label: "Users",
-    path: "/admin/users",
+    icon: "👥",
+    to: "/admin/users",
     permission: "user.view",
   },
   {
     label: "Activity Logs",
-    path: "/admin/activity-logs",
+    icon: "📜",
+    to: "/admin/activity-logs",
     permission: "activity-log.view",
   },
   {
     label: "Roles",
-    path: "/admin/roles",
+    icon: "🛡️",
+    to: "/admin/roles",
     permission: "admin.view",
   },
   {

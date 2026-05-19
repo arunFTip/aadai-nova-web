@@ -2,14 +2,14 @@
   <div>
     <h1 class="text-2xl font-bold mb-6">Edit Role</h1>
 
-    <BaseCard>
-      <p v-if="loading">Loading role...</p>
+    <p v-if="loading">Loading role...</p>
 
-      <form v-else class="space-y-4" @submit.prevent="submit">
-        <BaseFormSection
-          title="Edit Role Information"
-          description="Edit the role's information and assign permissions."
-        >
+    <BaseFormCard @submit="submit">
+      <BaseFormSection
+        title="Edit Role Information"
+        description="Edit the role's information and assign permissions."
+      >
+        <BaseFormGrid>
           <BaseInput
             v-model="form.name"
             label="Role Name"
@@ -23,40 +23,25 @@
             placeholder="Enter role description"
             :error="first('description')"
           />
+        </BaseFormGrid>
 
-          <div>
-            <h3 class="font-semibold mb-2">Permissions</h3>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <label
-                v-for="permission in permissions"
-                :key="permission.id"
-                class="flex items-center gap-2"
-              >
-                <input
-                  v-model="form.permissions"
-                  type="checkbox"
-                  :value="permission.name"
-                />
-
-                <span>{{ permission.name }}</span>
-              </label>
-            </div>
-          </div>
-        </BaseFormSection>
-        <BaseFormActions
-          :loading="saving"
-          submit-text="Update Role"
-          loading-text="Updating..."
-          cancel-to="/admin/roles"
+        <<BasePermissionGrid
+          v-model="form.permissions"
+          :groups="permissionGroups"
         />
-      </form>
-    </BaseCard>
+      </BaseFormSection>
+      <BaseFormActions
+        :loading="saving"
+        submit-text="Update Role"
+        loading-text="Updating..."
+        cancel-to="/admin/roles"
+      />
+    </BaseFormCard>
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "../../../composables/useToast";
 import BaseCard from "../../../components/ui/BaseCard.vue";
@@ -67,6 +52,10 @@ import { useFormErrors } from "../../../composables/useFormErrors";
 import BaseFormSection from "../../../components/ui/BaseFormSection.vue";
 import BaseFormActions from "../../../components/ui/BaseFormActions.vue";
 import BaseTextarea from "../../../components/ui/BaseTextarea.vue";
+import BaseFormGrid from "../../../components/ui/BaseFormGrid.vue";
+import BaseFormCard from "../../../components/ui/BaseFormCard.vue";
+import BasePermissionGrid from "../../../components/ui/BasePermissionGrid.vue";
+import { formatLabel } from "../../../utils/format";
 
 const route = useRoute();
 const router = useRouter();
@@ -104,6 +93,28 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
+});
+
+const permissionGroups = computed(() => {
+  const groups = {};
+
+  permissions.value.forEach((permission) => {
+    const permissionName =
+      typeof permission === "string" ? permission : permission.name;
+
+    const group = permissionName.split(".")[0];
+
+    if (!groups[group]) {
+      groups[group] = [];
+    }
+
+    groups[group].push(permissionName);
+  });
+
+  return Object.entries(groups).map(([name, permissions]) => ({
+    name: formatLabel(name),
+    permissions,
+  }));
 });
 
 async function submit() {

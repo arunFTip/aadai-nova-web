@@ -82,5 +82,11 @@ const items = [
       "Manage third-party integrations and external service connections.",
     to: "/admin/settings/integrations",
   },
+  {
+    title: "Theme",
+    icon: "🎨",
+    description: "Customize layout, sidebar, header, and skin colors.",
+    to: "/admin/settings/theme",
+  },
 ];
 </script>

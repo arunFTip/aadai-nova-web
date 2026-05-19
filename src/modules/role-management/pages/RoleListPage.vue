@@ -46,6 +46,13 @@
         <template #actions="{ item }">
           <div class="space-y-2">
             <router-link
+              v-if="auth.hasPermission('admin.view')"
+              :to="`/admin/roles/${item.id}`"
+              class="text-[var(--color-link)] hover:underline"
+            >
+              Details
+            </router-link>
+            <router-link
               v-if="auth.hasPermission('admin.update')"
               :to="`/admin/roles/${item.id}/edit`"
               class="text-blue-600 hover:underline"

@@ -49,6 +49,13 @@
         </template>
         <template #actions="{ item }">
           <router-link
+            v-if="auth.hasPermission('user.view')"
+            :to="`/admin/users/${item.id}`"
+            class="text-[var(--color-link)] hover:underline"
+          >
+            Details
+          </router-link>
+          <router-link
             v-if="auth.hasPermission('user.update')"
             :to="`/admin/users/${item.id}/edit`"
             class="text-[var(--color-link)] hover:underline"
