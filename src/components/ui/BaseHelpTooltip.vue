@@ -8,7 +8,7 @@
     </button>
 
     <div
-      class="absolute left-6 top-0 z-50 hidden w-64 rounded-lg border border-[var(--color-border)] bg-white p-3 text-xs shadow-lg group-hover:block dark:bg-[var(--color-surface)]"
+      class="absolute left-6 top-0 z-50 hidden w-64 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-3 text-xs shadow-lg group-hover:block dark:bg-[var(--color-surface)]"
     >
       {{ text }}
     </div>

@@ -17,19 +17,18 @@
           <aside
             :class="[
               sidebarClass,
-              sidebarColorClass,
               mobileSidebarOpen
                 ? 'translate-x-0'
                 : '-translate-x-full lg:translate-x-0',
             ]"
-            class="fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[var(--color-sidebar)] transition-transform duration-300 lg:static"
+            class="fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] transition-transform duration-300 lg:static"
           >
             <div
               class="flex items-center border-b border-white/10 px-4 py-5"
               :class="theme.sidebarMode === 'icon' ? 'justify-center' : ''"
             >
               <div
-                class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-xl"
+                class="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-bg)]/10 text-xl"
               >
                 🧵
               </div>
@@ -39,7 +38,7 @@
 
                 <p
                   class="text-xs"
-                  :class="sidebarUiClass?.muted || 'text-white/50'"
+                  :class="'text-[var(--sidebar-muted)]' || 'text-white/50'"
                 >
                   ERP Platform
                 </p>
@@ -90,13 +89,9 @@
                           theme.sidebarMode === 'icon'
                             ? 'justify-center'
                             : 'gap-3',
-
                           isActive(item)
                             ? activeMenuClass
-                            : [
-                                sidebarUiClass?.hover || 'hover:bg-white/10',
-                                sidebarUiClass?.muted || 'text-white/50',
-                              ],
+                            : 'text-[var(--sidebar-muted)] hover:bg-[var(--color-bg)]/10 hover:text-white/50',
                         ]"
                         @click="mobileSidebarOpen = false"
                       >
@@ -129,7 +124,7 @@
             >
               <button
                 type="button"
-                class="flex w-full items-center rounded-lg px-3 py-2 text-sm text-white/80 transition hover:bg-white/10 hover:text-white"
+                class="flex w-full items-center rounded-lg px-3 py-2 text-sm text-white/80 transition hover:bg-[var(--color-bg)]/10 hover:text-white"
                 :class="
                   theme.sidebarMode === 'icon' ? 'justify-center' : 'gap-3'
                 "
@@ -229,8 +224,8 @@
             </div>
           </div>
           <header
-            :class="[headerClass, headerColorClass]"
-            class="border-b border-[var(--color-border)] px-6 py-4"
+            :class="headerClass"
+            class="border-b border-[var(--header-border)] bg-[var(--header-bg)] px-6 py-4 text-[var(--header-text)]"
           >
             <h2 class="text-xl font-semibold">Admin Panel</h2>
             <button
@@ -346,18 +341,6 @@ const layoutClass = computed(() => {
   return theme.value.layoutWidth === "boxed" ? "mx-auto max-w-7xl" : "w-full";
 });
 
-const sidebarClass = computed(() => {
-  if (theme.value.sidebarMode === "icon") {
-    return "lg:w-20";
-  }
-
-  if (theme.value.sidebarMode === "collapsed") {
-    return "lg:w-24";
-  }
-
-  return "lg:w-64";
-});
-
 const isHorizontalLayout = computed(() => {
   return theme.value.sidebarOrientation === "horizontal";
 });
@@ -377,30 +360,6 @@ const headerClass = computed(() => {
   return theme.value.headerPosition === "fixed" ? "sticky top-0 z-30" : "";
 });
 
-const headerColorClass = computed(() => {
-  const colors = {
-    light: "bg-[var(--color-card)] text-[var(--color-text)]",
-    dark: "bg-slate-900 text-white",
-    green: "bg-emerald-900 text-white",
-    blue: "bg-blue-900 text-white",
-    slate: "bg-slate-800 text-white",
-  };
-
-  return colors[theme.value.headerColor] || colors.light;
-});
-
-const sidebarColorClass = computed(() => {
-  const colors = {
-    light: "bg-white text-slate-900",
-    dark: "bg-slate-950 text-white",
-    green: "bg-emerald-950 text-white",
-    blue: "bg-blue-950 text-white",
-    slate: "bg-slate-900 text-white",
-  };
-
-  return colors[theme.value.sidebarColor] || colors.dark;
-});
-
 const activeMenuClass = computed(() => {
   const styles = {
     green:
@@ -418,47 +377,6 @@ const activeMenuClass = computed(() => {
   };
 
   return styles[theme.value.skin] || styles.green;
-});
-
-const sidebarUiClass = computed(() => {
-  const styles = {
-    light: {
-      border: "border-slate-200",
-      hover: "hover:bg-slate-100",
-      muted: "text-slate-500",
-      tooltip: "bg-slate-900 text-white",
-    },
-
-    dark: {
-      border: "border-white/10",
-      hover: "hover:bg-white/10",
-      muted: "text-white/50",
-      tooltip: "bg-black text-white",
-    },
-
-    green: {
-      border: "border-emerald-800",
-      hover: "hover:bg-emerald-800/60",
-      muted: "text-emerald-200/60",
-      tooltip: "bg-emerald-950 text-white",
-    },
-
-    blue: {
-      border: "border-blue-800",
-      hover: "hover:bg-blue-800/60",
-      muted: "text-blue-200/60",
-      tooltip: "bg-blue-950 text-white",
-    },
-
-    slate: {
-      border: "border-slate-700",
-      hover: "hover:bg-slate-700/60",
-      muted: "text-slate-300/50",
-      tooltip: "bg-slate-950 text-white",
-    },
-  };
-
-  return styles[theme.value.sidebarColor] ?? styles.dark;
 });
 
 const showSecondarySidebar = computed(() => {

@@ -329,3 +329,69 @@ Finance
 Reports
 
 Secondary sidebar is intended for contextual navigation inside large modules.
+
+## Theme System
+
+Theme settings are tenant-backed and runtime-applied.
+
+Current supported settings:
+
+- theme.layout_width
+- theme.sidebar_mode
+- theme.sidebar_orientation
+- theme.header_position
+- theme.mode
+- theme.skin
+- theme.sidebar_color
+- theme.header_color
+
+Theme flow:
+
+Tenant Theme Settings API
+↓
+Frontend Runtime Store
+↓
+themeEngine.js
+↓
+CSS Variables
+↓
+Application UI
+
+Theme colors should use CSS variables:
+
+- --color-primary
+- --color-primary-hover
+- --color-primary-contrast
+- --color-bg
+- --color-surface
+- --color-text
+- --color-muted
+- --color-border
+- --sidebar-bg
+- --sidebar-text
+- --sidebar-muted
+- --header-bg
+- --header-text
+- --header-border
+
+Avoid hardcoded colors in layout-level components.
+
+## Theme Settings Form
+
+Theme Settings supports:
+
+- live preview before save
+- tenant-backed persistence
+- reset to default
+- layout width
+- sidebar mode
+- sidebar orientation
+- theme mode
+- skin
+- sidebar color
+- header color
+- header position
+
+Important UX rule:
+
+Theme changes preview immediately, but must be saved to persist after refresh.
