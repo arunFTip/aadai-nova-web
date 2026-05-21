@@ -377,7 +377,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, computed, watchEffect, watch } from "vue";
 
 import BaseButton from "../../../components/ui/BaseButton.vue";
 import BaseFormGrid from "../../../components/ui/BaseFormGrid.vue";
@@ -386,7 +386,7 @@ import BasePageContainer from "../../../components/ui/BasePageContainer.vue";
 import BaseSelect from "../../../components/ui/BaseSelect.vue";
 
 import SettingsSectionCard from "../components/SettingsSectionCard.vue";
-import { fetchThemeSettings, saveThemeSettings } from "../api/themeSettingsApi";
+import { saveThemeSettings } from "../api/themeSettingsApi";
 import { useToast } from "../../../composables/useToast";
 import {
   layoutWidthOptions,
@@ -398,13 +398,12 @@ import {
   colorOptions,
 } from "../../../constants/themeOptions";
 
-import { watchEffect, watch } from "vue";
 import { applyThemeVariables } from "../../../utils/themeEngine";
 
 import {
-  loadPreferences,
   getPreference,
   setPreference,
+  loadAppBootstrap,
 } from "../../../stores/preferenceStore";
 import BaseOptionCard from "../../../components/ui/BaseOptionCard.vue";
 
@@ -439,24 +438,15 @@ const form = reactive({
 
 const toast = useToast();
 
+const theme = computed(() => ({
+  mode: form.theme_mode,
+  skin: form.skin,
+  sidebar_color: form.sidebar_color,
+  header_color: form.header_color,
+}));
+
 watchEffect(() => {
   applyThemeVariables(theme.value);
-});
-
-onMounted(async () => {
-  await loadPreferences();
-
-  form.layout_width = getPreference("theme.layout_width", "full");
-  form.sidebar_mode = getPreference("theme.sidebar_mode", "expanded");
-  form.header_position = getPreference("theme.header_position", "scrollable");
-  form.theme_mode = getPreference("theme.mode", "light");
-  form.skin = getPreference("theme.skin", "green");
-  form.sidebar_color = getPreference("theme.sidebar_color", "dark");
-  form.header_color = getPreference("theme.header_color", "light");
-  form.sidebar_orientation = getPreference(
-    "theme.sidebar_orientation",
-    "vertical",
-  );
 });
 
 watch(
@@ -495,26 +485,19 @@ function resetTheme() {
 }
 
 onMounted(async () => {
-  const settings = await fetchThemeSettings();
+  await loadAppBootstrap();
 
-  form.layout_width = settings["theme.layout_width"] || "full";
-  form.sidebar_mode = settings["theme.sidebar_mode"] || "expanded";
-  form.sidebar_orientation =
-    settings["theme.sidebar_orientation"] || "vertical";
-  form.header_position = settings["theme.header_position"] || "scrollable";
-  form.theme_mode = settings["theme.mode"] || "light";
-  form.skin = settings["theme.skin"] || "green";
-  form.sidebar_color = settings["theme.sidebar_color"] || "dark";
-  form.header_color = settings["theme.header_color"] || "light";
-
-  setPreference("theme.layout_width", form.layout_width);
-  setPreference("theme.sidebar_mode", form.sidebar_mode);
-  setPreference("theme.sidebar_orientation", form.sidebar_orientation);
-  setPreference("theme.header_position", form.header_position);
-  setPreference("theme.mode", form.theme_mode);
-  setPreference("theme.skin", form.skin);
-  setPreference("theme.sidebar_color", form.sidebar_color);
-  setPreference("theme.header_color", form.header_color);
+  form.layout_width = getPreference("theme.layout_width", "full");
+  form.sidebar_mode = getPreference("theme.sidebar_mode", "expanded");
+  form.sidebar_orientation = getPreference(
+    "theme.sidebar_orientation",
+    "vertical",
+  );
+  form.header_position = getPreference("theme.header_position", "scrollable");
+  form.theme_mode = getPreference("theme.mode", "light");
+  form.skin = getPreference("theme.skin", "green");
+  form.sidebar_color = getPreference("theme.sidebar_color", "dark");
+  form.header_color = getPreference("theme.header_color", "light");
 });
 
 async function submit() {

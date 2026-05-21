@@ -140,8 +140,7 @@ async function submit() {
 
     //await createUser(payload);
 
-    const response = await createUser(payload);
-    const user = response.user || response.data?.user;
+    const user = await createUser(payload);
 
     if (form.roles) {
       await updateUserRoles(user.id, [form.roles]);

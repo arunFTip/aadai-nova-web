@@ -174,27 +174,6 @@ const form = reactive({
   time_format: "12h",
 });
 
-const timezones = [
-  {
-    label: "India Standard Time",
-    value: "Asia/Kolkata",
-  },
-];
-
-const currencies = [
-  {
-    label: "Indian Rupee (INR)",
-    value: "INR",
-  },
-];
-
-const locales = [
-  {
-    label: "English (India)",
-    value: "en-IN",
-  },
-];
-
 const saving = ref(false);
 
 const toast = useToast();

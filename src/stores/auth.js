@@ -25,6 +25,9 @@ export const useAuthStore = defineStore("auth", {
       localStorage.setItem("token", this.token);
 
       client.defaults.headers.common.Authorization = `Bearer ${this.token}`;
+
+      const { clearBootstrapCache } = await import("./preferenceStore");
+      clearBootstrapCache();
     },
 
     async fetchUser() {
@@ -37,19 +40,28 @@ export const useAuthStore = defineStore("auth", {
       this.user = response.data.data.user;
     },
 
+    async clearSession() {
+      this.user = null;
+      this.token = null;
+      localStorage.removeItem("token");
+      delete client.defaults.headers.common.Authorization;
+
+      const { clearBootstrapCache } = await import("./preferenceStore");
+      clearBootstrapCache();
+    },
+
     async logout() {
       if (this.token) {
         client.defaults.headers.common.Authorization = `Bearer ${this.token}`;
 
-        await client.post("/auth/logout");
+        try {
+          await client.post("/auth/logout");
+        } catch {
+          // Still clear local session if API is unavailable.
+        }
       }
 
-      this.user = null;
-      this.token = null;
-
-      localStorage.removeItem("token");
-
-      delete client.defaults.headers.common.Authorization;
+      await this.clearSession();
     },
   },
 });

@@ -40,7 +40,7 @@ client.interceptors.response.use(
 
     return response;
   },
-  (error) => {
+  async (error) => {
     const loadingStore = useLoadingStore();
     loadingStore.hide();
 
@@ -48,6 +48,8 @@ client.interceptors.response.use(
 
     if (status === 401) {
       localStorage.removeItem("token");
+      const { clearBootstrapCache } = await import("../stores/preferenceStore");
+      clearBootstrapCache();
       window.location.href = "/login";
       toast.error("Session expired. Please login again.");
     } else if (status === 403) {

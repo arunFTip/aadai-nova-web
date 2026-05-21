@@ -3,7 +3,6 @@ import { onMounted } from "vue";
 import { Toaster } from "vue-sonner";
 import GlobalLoader from "./components/ui/GlobalLoader.vue";
 import { useThemeStore } from "./stores/theme";
-
 const themeStore = useThemeStore();
 
 onMounted(() => {

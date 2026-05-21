@@ -34,10 +34,11 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 
+import { saveUserPreference } from "../../modules/user-preferences/api/userPreferenceApi";
 import {
-  fetchUserPreferences,
-  saveUserPreference,
-} from "../../modules/user-preferences/api/userPreferenceApi";
+  getAllPreferences,
+  loadPreferences,
+} from "../../stores/preferenceStore";
 
 const props = defineProps({
   columns: {
@@ -58,7 +59,9 @@ const visibleCount = computed(() => {
 });
 
 onMounted(async () => {
-  const preferences = await fetchUserPreferences();
+  await loadPreferences();
+
+  const preferences = getAllPreferences();
 
   const saved = preferences[props.storageKey];
 

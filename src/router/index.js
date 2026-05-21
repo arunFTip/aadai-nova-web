@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "../stores/auth";
+import { loadAppBootstrap } from "../stores/preferenceStore";
 
 const routes = [
   {
@@ -206,9 +207,13 @@ router.beforeEach(async (to) => {
     try {
       await auth.fetchUser();
     } catch {
-      auth.logout();
+      await auth.clearSession();
       return "/login";
     }
+  }
+
+  if (token && to.path.startsWith("/admin")) {
+    await loadAppBootstrap();
   }
 
   if (to.meta.permission) {
@@ -219,8 +224,8 @@ router.beforeEach(async (to) => {
     }
   }
 
-  if (to.path === "/login" && token) {
-    return "/403";
+  if (to.path === "/login" && auth.token) {
+    return "/admin";
   }
 });
 

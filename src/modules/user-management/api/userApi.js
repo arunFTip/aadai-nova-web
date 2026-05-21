@@ -1,7 +1,7 @@
 import client from "../../../api/client";
 
 export async function createUser(payload) {
-  const response = await client.post("/auth/register", payload);
+  const response = await client.post("/users", payload);
 
   return response.data.data.user;
 }
